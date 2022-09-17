@@ -1,5 +1,6 @@
 require('dotenv').config()
 const cors = require('cors')
+const multer = require('multer')
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
@@ -22,5 +23,17 @@ const imageScheme = new mongoose.Schema({
 })
 
 const ImageModel = new mongoose.Model('ImageModel', imageScheme)
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) =>{
+        cb(null, 'uploads')
+    },
+    filename: (req, file, cb) =>{
+        cb(null, file.filename + Date.now())
+    }
+}) 
+
+const upload = multer({storage: storage})
 
 app.listen(PORT, ()=> console.log('Server is live:' + PORT))
