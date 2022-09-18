@@ -1,7 +1,5 @@
 require("dotenv").config();
-const fs = require("fs");
 const cors = require("cors");
-const multer = require("multer");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -27,34 +25,30 @@ const imageScheme = new mongoose.Schema({
 
 const ImageModel = new mongoose.model("ImageModel", imageScheme);
 
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, "uploads");
-	},
-	filename: (req, file, cb) => {
-		cb(null, file.originalname);
-	},
-});
-
-const upload = multer({ storage: storage });
-
 app.get("/", (req, res) => {
 	res.send("<h1>Hello mom</h1>");
 });
 
-app.post("/uploads", upload.single("image"), (req, res) => {
+app.post("/uploads", (req, res) => {
 	const newImage = ImageModel({
 		name: req.body.name,
 		image: {
-			data: fs.readFileSync("uploads/" + req.file.filename),
+			data: req.file,
 			contentType: "image/png",
 		},
 	});
 
-	newImage.save().then(() => {
-		console.log("image was saved");
-		res.end();
-	});
+	newImage
+		.save()
+		.then(() => console.log("image was saved"))
+		.catch((err) => console.log(err));
+	res.end();
 });
 
+// return an image from a link
+app.get("/download/:id", async (req, res) => {
+	const imageId = req.params.id;
+	const imageReturned = await ImageModel.findById(imageId);
+	res.json({ image: imageReturned });
+});
 app.listen(PORT, () => console.log("Server is live:" + PORT));
