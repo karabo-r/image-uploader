@@ -40,15 +40,18 @@ app.post("/uploads", (req, res) => {
 
 	newImage
 		.save()
-		.then(() => console.log("image was saved"))
+		.then((response) => {
+			res.json({ imageID: response.id });
+		})
 		.catch((err) => console.log(err));
-	res.end();
+	// res.end();
 });
 
 // return an image from a link
 app.get("/download/:id", async (req, res) => {
-	const imageId = req.params.id;
-	const imageReturned = await ImageModel.findById(imageId);
-	res.json({ image: imageReturned });
+	const imageID = req.params.id;
+	const returnImage = await ImageModel.findById(imageID);
+	res.json(returnImage);
 });
+
 app.listen(PORT, () => console.log("Server is live:" + PORT));
