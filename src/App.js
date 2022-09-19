@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import defaultImage from "./assets/default-preview.svg";
+import checkIcon from "./assets/check-icon.svg";
 import { motion } from "framer-motion";
 const App = () => {
 	return (
@@ -12,7 +13,7 @@ const App = () => {
 				<p>or</p>
 				<button>Choose a file</button>
 			</div> */}
-			<div className="loading">
+			{/* <div className="loading">
 				<h1>Uploading...</h1>
 				<div className="container">
 					<motion.div
@@ -25,6 +26,15 @@ const App = () => {
 							duration: 1.5,
 						}}
 					></motion.div>
+				</div>
+			</div> */}
+			<div className="file-uploaded">
+				<div className="check-icon"></div>
+				<h1>Uploaded Successfully</h1>
+				<div className="preview"></div>
+				<div className="download">
+					<div className="download-link"></div>
+					<button className="download-btn">Copy Link</button>
 				</div>
 			</div>
 		</Container>
@@ -170,6 +180,108 @@ const Container = styled.div`
 				background: #2f80ed;
 				border-radius: 8px;
 			}
+		}
+	}
+
+	.file-uploaded {
+		line-height: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		width: 23rem;
+		height: 25rem;
+		max-width: 25rem;
+		max-height: 25rem;
+		background-color: rebeccapurple;
+
+		background: #ffffff;
+		box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+		border-radius: 12px;
+		padding: 1rem;
+
+		.check-icon {
+			height: 3rem;
+			width: 3rem;
+			border-radius: 100%;
+			background-image: url(${checkIcon});
+		}
+		h1 {
+			font-family: "Poppins";
+			font-style: normal;
+			font-weight: 500;
+			font-size: 18px;
+			line-height: 27px;
+			/* identical to box height */
+
+			text-align: center;
+			letter-spacing: -0.035em;
+			margin-top: 1rem;
+			margin-bottom: 1rem;
+		}
+
+		.preview {
+			box-sizing: border-box;
+
+			/* position: absolute; */
+			width: 338px;
+			height: 218.9px;
+			left: 551.82px;
+			top: 427.97px;
+
+			background: #f6f8fb;
+			border: 2px dashed #97bef4;
+			border-radius: 12px;
+			background-image: url(${defaultImage});
+			background-size: 12rem;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+
+		.download {
+			height: 2rem;
+			width: 80%;
+			margin-top: 1rem;
+			background-color: rebeccapurple;
+			display: grid;
+			grid-template-columns: 70% auto;
+			background: #F6F8FB;
+/* Gray 5 */
+
+border: 1px solid #E0E0E0;
+border-radius: 8px;
+
+			button {
+			font-family: "Noto Sans";
+			font-style: normal;
+			font-weight: 500;
+			font-size: 12px;
+			line-height: 16px;
+			text-align: center;
+			letter-spacing: -0.035em;
+
+			color: #ffffff;
+			background: #2f80ed;
+			border-radius: 8px;
+			outline: none;
+			border: none;
+			padding: 0.5rem 1rem;
+		}
+
+		.download-link{
+			/* height: 100%; */
+			/* width: 100%; */
+			/* background-color: gray; */
+			font-family: 'Poppins';
+font-style: normal;
+font-weight: 500;
+font-size: 8px;
+line-height: 12px;
+/* identical to box height */
+
+text-align: center;
+letter-spacing: -0.035em;
+		}
 		}
 	}
 `;
