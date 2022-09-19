@@ -1,42 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import defaultImage from "./assets/default-preview.svg";
 import checkIcon from "./assets/check-icon.svg";
 import { motion } from "framer-motion";
 const App = () => {
+	const [isFileUploading, setIsFileUploading] = useState(false);
+	const [isFileUploaded, setIsFileUploaded] = useState(false);
 	return (
 		<Container>
-			{/* <div className="card">
-				<h1>Upload your image</h1>
-				<p>File should be a Png, Jpeg...</p>
-				<div className="preview"></div>
-				<p>or</p>
-				<button>Choose a file</button>
-			</div> */}
-			{/* <div className="loading">
-				<h1>Uploading...</h1>
-				<div className="container">
-					<motion.div
-						className="element"
-						//  initial={{ x: "100%" }}
-						animate={{ x: 230 }}
-						transition={{
-							repeat: Infinity,
-							repeatType: "mirror",
-							duration: 1.5,
-						}}
-					></motion.div>
+			{!isFileUploading && !isFileUploaded && (
+				<div className="card">
+					<h1>Upload your image</h1>
+					<p>File should be a Png, Jpeg...</p>
+					<div className="preview"></div>
+					<p>or</p>
+					<button>Choose a file</button>
 				</div>
-			</div> */}
-			<div className="file-uploaded">
-				<div className="check-icon"></div>
-				<h1>Uploaded Successfully</h1>
-				<div className="preview"></div>
-				<div className="download">
-					<div className="download-link"></div>
-					<button className="download-btn">Copy Link</button>
+			)}
+
+			{isFileUploading && (
+				<div className="loading">
+					<h1>Uploading...</h1>
+					<div className="container">
+						<motion.div
+							className="element"
+							//  initial={{ x: "100%" }}
+							animate={{ x: 230 }}
+							transition={{
+								repeat: Infinity,
+								repeatType: "mirror",
+								duration: 1.5,
+							}}
+						></motion.div>
+					</div>
 				</div>
-			</div>
+			)}
+			{isFileUploaded && (
+				<div className="file-uploaded">
+					<div className="check-icon"></div>
+					<h1>Uploaded Successfully</h1>
+					<div className="preview"></div>
+					<div className="download">
+						<div className="download-link"></div>
+						<button className="download-btn">Copy Link</button>
+					</div>
+				</div>
+			)}
 		</Container>
 	);
 };
@@ -245,43 +254,43 @@ const Container = styled.div`
 			background-color: rebeccapurple;
 			display: grid;
 			grid-template-columns: 70% auto;
-			background: #F6F8FB;
-/* Gray 5 */
+			background: #f6f8fb;
+			/* Gray 5 */
 
-border: 1px solid #E0E0E0;
-border-radius: 8px;
+			border: 1px solid #e0e0e0;
+			border-radius: 8px;
 
 			button {
-			font-family: "Noto Sans";
-			font-style: normal;
-			font-weight: 500;
-			font-size: 12px;
-			line-height: 16px;
-			text-align: center;
-			letter-spacing: -0.035em;
+				font-family: "Noto Sans";
+				font-style: normal;
+				font-weight: 500;
+				font-size: 12px;
+				line-height: 16px;
+				text-align: center;
+				letter-spacing: -0.035em;
 
-			color: #ffffff;
-			background: #2f80ed;
-			border-radius: 8px;
-			outline: none;
-			border: none;
-			padding: 0.5rem 1rem;
-		}
+				color: #ffffff;
+				background: #2f80ed;
+				border-radius: 8px;
+				outline: none;
+				border: none;
+				padding: 0.5rem 1rem;
+			}
 
-		.download-link{
-			/* height: 100%; */
-			/* width: 100%; */
-			/* background-color: gray; */
-			font-family: 'Poppins';
-font-style: normal;
-font-weight: 500;
-font-size: 8px;
-line-height: 12px;
-/* identical to box height */
+			.download-link {
+				/* height: 100%; */
+				/* width: 100%; */
+				/* background-color: gray; */
+				font-family: "Poppins";
+				font-style: normal;
+				font-weight: 500;
+				font-size: 8px;
+				line-height: 12px;
+				/* identical to box height */
 
-text-align: center;
-letter-spacing: -0.035em;
-		}
+				text-align: center;
+				letter-spacing: -0.035em;
+			}
 		}
 	}
 `;
