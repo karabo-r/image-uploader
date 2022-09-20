@@ -1,18 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import defaultImage from "./assets/default-preview.svg";
 import checkIcon from "./assets/check-icon.svg";
 import { motion } from "framer-motion";
 const App = () => {
+	const [previewImage, setPreviewImage] = useState(defaultImage)
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
+
+	const drop = useRef(null);
+
+	const onUpload = (files) => {
+		console.log(files);
+	};
+
+	React.useEffect(() => {
+		drop.current.addEventListener("dragover", handleDragOver);
+		drop.current.addEventListener("drop", handleDrop);
+
+		return () => {
+			drop.current.removeEventListener("dragover", handleDragOver);
+			drop.current.removeEventListener("drop", handleDrop);
+		};
+	}, []);
+
+	const handleDragOver = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+	};
+
+	const handleDrop = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const { files } = e.dataTransfer;
+
+		if (files && files.length) {
+			onUpload(files);
+			setPreviewImage(URL.createObjectURL(files[0]))
+		}
+	};
+
 	return (
 		<Container>
 			{!isFileUploading && !isFileUploaded && (
 				<div className="card">
 					<h1>Upload your image</h1>
 					<p>File should be a Png, Jpeg...</p>
-					<div className="preview"></div>
+					<div ref={drop} 
+					className="preview"
+					style={{backgroundImage: `url(${previewImage})`}}
+					></div>
 					<p>or</p>
 					<button>Choose a file</button>
 				</div>
@@ -118,7 +156,7 @@ const Container = styled.div`
 			background: #f6f8fb;
 			border: 2px dashed #97bef4;
 			border-radius: 12px;
-			background-image: url(${defaultImage});
+			/* background-image: url(${defaultImage}); */
 			background-size: 12rem;
 			background-position: center;
 			background-repeat: no-repeat;
