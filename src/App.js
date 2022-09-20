@@ -1,35 +1,39 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import defaultImage from "./assets/default-preview.svg";
 import checkIcon from "./assets/check-icon.svg";
 import { motion } from "framer-motion";
 const App = () => {
-	const [previewImage, setPreviewImage] = useState(defaultImage)
+	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
 
 	const drop = useRef(null);
+	const input = useRef(null);
 
 	const onUpload = (files) => {
 		console.log(files);
 	};
 
-	React.useEffect(() => {
-		drop.current.addEventListener("dragover", handleDragOver);
-		drop.current.addEventListener("drop", handleDrop);
+	function appendEventListeners() {
+		drop.current.addEventListener("dragover", handleFileDragOver);
+		drop.current.addEventListener("drop", handleFileDrop);
+		drop.current.addEventListener("click", handleInputClick);
 
 		return () => {
-			drop.current.removeEventListener("dragover", handleDragOver);
-			drop.current.removeEventListener("drop", handleDrop);
+			drop.current.removeEventListener("dragover", handleFileDragOver);
+			drop.current.removeEventListener("drop", handleFileDrop);
+			drop.current.addEventListener("click", handleInputClick);
 		};
-	}, []);
+	}
+	useEffect(() => appendEventListeners());
 
-	const handleDragOver = (e) => {
+	const handleFileDragOver = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
 	};
 
-	const handleDrop = (e) => {
+	const handleFileDrop = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -37,22 +41,33 @@ const App = () => {
 
 		if (files && files.length) {
 			onUpload(files);
-			setPreviewImage(URL.createObjectURL(files[0]))
+			setPreviewImage(URL.createObjectURL(files[0]));
 		}
 	};
 
+	function handleInputClick() {
+		input.current.click();
+	}
+	
+	function handleInput(e) {
+		setPreviewImage(URL.createObjectURL(e.target.files[0]));
+	}
 	return (
 		<Container>
 			{!isFileUploading && !isFileUploaded && (
 				<div className="card">
 					<h1>Upload your image</h1>
 					<p>File should be a Png, Jpeg...</p>
-					<div ref={drop} 
-					className="preview"
-					style={{backgroundImage: `url(${previewImage})`}}
-					></div>
+					<div
+						ref={drop}
+						className="preview"
+						style={{ backgroundImage: `url(${previewImage})` }}
+						// onClick={}
+					>
+						<input ref={input} type="file" onChange={(e) => handleInput(e)} />
+					</div>
 					<p>or</p>
-					<button>Choose a file</button>
+					<button onClick={handleInputClick}>Choose a file</button>
 				</div>
 			)}
 
@@ -160,6 +175,10 @@ const Container = styled.div`
 			background-size: 12rem;
 			background-position: center;
 			background-repeat: no-repeat;
+
+			input {
+				visibility: hidden;
+			}
 		}
 
 		button {
