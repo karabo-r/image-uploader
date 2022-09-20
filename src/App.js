@@ -4,6 +4,7 @@ import defaultImage from "./assets/default-preview.svg";
 import checkIcon from "./assets/check-icon.svg";
 import { motion } from "framer-motion";
 const App = () => {
+	const [file, setFile] = useState();
 	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
@@ -23,10 +24,15 @@ const App = () => {
 		return () => {
 			drop.current.removeEventListener("dragover", handleFileDragOver);
 			drop.current.removeEventListener("drop", handleFileDrop);
-			drop.current.addEventListener("click", handleInputClick);
+			drop.current.removeEventListener("click", handleInputClick);
 		};
 	}
-	useEffect(() => appendEventListeners());
+	useEffect(() => {
+		// appendEventListeners()
+		if (!isFileUploading && !isFileUploaded) {
+			appendEventListeners();
+		}
+	});
 
 	const handleFileDragOver = (e) => {
 		e.preventDefault();
@@ -41,16 +47,24 @@ const App = () => {
 
 		if (files && files.length) {
 			onUpload(files);
-			setPreviewImage(URL.createObjectURL(files[0]));
+			const filePath = URL.createObjectURL(files[0]);
+			setPreviewImage(filePath);
+			setFile(filePath);
 		}
 	};
 
 	function handleInputClick() {
 		input.current.click();
 	}
-	
+
 	function handleInput(e) {
-		setPreviewImage(URL.createObjectURL(e.target.files[0]));
+		const filePath = URL.createObjectURL(e.target.files[0]);
+		setPreviewImage(filePath);
+		setFile(filePath);
+	}
+
+	function uploadFile() {
+		setIsFileUploading(true);
 	}
 	return (
 		<Container>
@@ -62,12 +76,15 @@ const App = () => {
 						ref={drop}
 						className="preview"
 						style={{ backgroundImage: `url(${previewImage})` }}
-						// onClick={}
 					>
 						<input ref={input} type="file" onChange={(e) => handleInput(e)} />
 					</div>
-					<p>or</p>
-					<button onClick={handleInputClick}>Choose a file</button>
+					{!file && (
+						<>
+							<button onClick={handleInputClick}>Choose a file</button>
+						</>
+					)}
+					{file && <button onClick={uploadFile}>Upload</button>}
 				</div>
 			)}
 
@@ -92,7 +109,10 @@ const App = () => {
 				<div className="file-uploaded">
 					<div className="check-icon"></div>
 					<h1>Uploaded Successfully</h1>
-					<div className="preview"></div>
+					<div
+						className="preview"
+						style={{ backgroundImage: `url(${previewImage})` }}
+					></div>
 					<div className="download">
 						<div className="download-link"></div>
 						<button className="download-btn">Copy Link</button>
@@ -182,6 +202,7 @@ const Container = styled.div`
 		}
 
 		button {
+			margin-top: 1rem;
 			font-family: "Noto Sans";
 			font-style: normal;
 			font-weight: 500;
@@ -298,7 +319,7 @@ const Container = styled.div`
 			background: #f6f8fb;
 			border: 2px dashed #97bef4;
 			border-radius: 12px;
-			background-image: url(${defaultImage});
+			/* background-image: url(${defaultImage}); */
 			background-size: 12rem;
 			background-position: center;
 			background-repeat: no-repeat;
