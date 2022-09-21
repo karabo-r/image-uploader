@@ -7,13 +7,16 @@ import { motion } from "framer-motion";
 import axios from "axios";
 const App = () => {
 	const [file, setFile] = useState();
-	const [fileServerID, setFileServerID] = useState("adf");
+	const [fileServerID, setFileServerID] = useState();
 	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
-	const [isFileUploaded, setIsFileUploaded] = useState(true);
+	const [isFileUploaded, setIsFileUploaded] = useState(false);
+	const [isFileDownload, setFileDownload] = useState(false);
 
 	const drop = useRef(null);
 	const input = useRef(null);
+	const downloadInput = useRef(null);
+	const downloadButton = useRef(null)
 
 	function appendEventListeners() {
 		drop.current.addEventListener("dragover", handleFileDragOver);
@@ -27,7 +30,7 @@ const App = () => {
 		};
 	}
 	useEffect(() => {
-		if (!isFileUploading && !isFileUploaded) {
+		if (!isFileUploading && !isFileUploaded && !isFileDownload) {
 			appendEventListeners();
 		}
 	});
@@ -97,8 +100,13 @@ const App = () => {
 				setIsFileUploaded(true);
 				setIsFileUploading(false);
 				break;
+			case "download":
+				handleDisplayRenders() // default value reset all displays
+				setFileDownload(true)
+				break;
 			// eslint-disable-next-line no-fallthrough
 			default:
+				setFileDownload(false)
 				setIsFileUploaded(false);
 				setIsFileUploading(false);
 		}
@@ -116,9 +124,22 @@ const App = () => {
 		navigator.clipboard.writeText(fileServerID);
 	}
 
+	function handleFileServerID() {
+		setFileServerID(downloadInput.current.value);
+	}
+
+	function previewFile() {
+		setFile("asdf");
+		setPreviewImage(defaultImage);
+	}
+
+	function downloadFile(){
+		downloadButton.current.href = defaultImage
+		downloadButton.current.click()
+	}
 	return (
 		<Container>
-			{!isFileUploading && !isFileUploaded && (
+			{!isFileUploading && !isFileUploaded && !isFileDownload && (
 				<div className="card">
 					<h1>Upload your image</h1>
 					<p>File should be a Png, Jpeg...</p>
@@ -135,6 +156,29 @@ const App = () => {
 						</>
 					)}
 					{file && <button onClick={uploadFile}>Upload</button>}
+				</div>
+			)}
+			{isFileDownload && (
+				<div className="card">
+					<h1>Download your image</h1>
+					{!file && <p>Please input an ID</p>}
+					{file && (
+						<div
+							className="preview"
+							style={{ backgroundImage: `url(${previewImage})` }}
+						></div>
+					)}
+					{!file && (
+						<input
+							ref={downloadInput}
+							value={fileServerID}
+							onChange={handleFileServerID}
+						/>
+					)}
+					<a ref={downloadButton} style={{display:'none'}} download/>
+					
+					{!file && <button onClick={previewFile}>Preview</button>}
+					{file && <button onClick={downloadFile}>Download</button>}
 				</div>
 			)}
 
@@ -154,7 +198,8 @@ const App = () => {
 					</div>
 				</div>
 			)}
-			{isFileUploaded && (
+
+			 {isFileUploaded && (
 				<div className="file-uploaded">
 					<div className="check-icon"></div>
 					<h1>Uploaded Successfully</h1>
@@ -175,6 +220,12 @@ const App = () => {
 						Upload another file
 					</p>
 				</div>
+			)} 
+			{!isFileDownload && (
+				<p className="download-button" onClick={()=>handleDisplayRenders('download')}>Download a file using an ID</p>
+			)}
+			{isFileDownload && (
+				<p className="download-button" onClick={()=>handleDisplayRenders('default')} >Upload a file and get an ID</p>
 			)}
 		</Container>
 	);
@@ -186,6 +237,25 @@ const Container = styled.div`
 	align-items: center;
 	justify-content: center;
 
+	input {
+		padding: 0.5rem;
+		/* border-radius: 5px; */
+		outline: none;
+		/* border: none; */
+	}
+
+	.download-button {
+		position: absolute;
+		bottom: 1.5rem;
+		font-family: "Poppins";
+		font-style: normal;
+		font-weight: 500;
+		opacity: 60%;
+		cursor: pointer;
+	}
+	.download-button:hover {
+		opacity: 100%;
+	}
 	.card {
 		line-height: 1rem;
 		display: flex;
