@@ -10,7 +10,7 @@ const App = () => {
 	const [fileServerID, setFileServerID] = useState("");
 	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
-	const [isFileUploaded, setIsFileUploaded] = useState(false);
+	const [isFileUploaded, setIsFileUploaded] = useState(true);
 
 	const drop = useRef(null);
 	const input = useRef(null);
@@ -104,7 +104,15 @@ const App = () => {
 		}
 		return;
 	}
-	
+
+	function resetToDefaultStates(){
+		setPreviewImage(defaultImage)
+		handleDisplayRenders() // default value resets display states
+		setFileServerID()
+		setFile()
+	}
+	// const processedFileDownloadLink = ``
+
 	return (
 		<Container>
 			{!isFileUploading && !isFileUploaded && (
@@ -155,6 +163,7 @@ const App = () => {
 						<div className="download-link">{fileServerID}</div>
 						<button className="download-btn">Copy Link</button>
 					</div>
+					<p className='reset' onClick={resetToDefaultStates}>Upload another file</p>
 				</div>
 			)}
 		</Container>
@@ -372,6 +381,7 @@ const Container = styled.div`
 			grid-template-columns: 70% auto;
 			background: #f6f8fb;
 			/* Gray 5 */
+			align-items: center;
 
 			border: 1px solid #e0e0e0;
 			border-radius: 8px;
@@ -400,13 +410,26 @@ const Container = styled.div`
 				font-family: "Poppins";
 				font-style: normal;
 				font-weight: 500;
-				font-size: 8px;
+				font-size: 0.6rem;
 				line-height: 12px;
 				/* identical to box height */
-
+				
 				text-align: center;
 				letter-spacing: -0.035em;
 			}
+			
+		}
+		.reset{
+			font-size: 0.9rem;
+			font-family: "Poppins";
+			font-style: normal;
+			font-weight: 500;
+			margin-top: 1.2rem;
+			cursor: pointer;
+			opacity: 60%;
+		}
+		.reset:hover{
+			opacity: 100%;
 		}
 	}
 `;
