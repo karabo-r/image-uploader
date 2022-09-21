@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 const App = () => {
 	const [file, setFile] = useState();
-	const [fileServerID, setFileServerID] = useState("");
+	const [fileServerID, setFileServerID] = useState("adf");
 	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(true);
@@ -105,13 +105,16 @@ const App = () => {
 		return;
 	}
 
-	function resetToDefaultStates(){
-		setPreviewImage(defaultImage)
-		handleDisplayRenders() // default value resets display states
-		setFileServerID()
-		setFile()
+	function resetToDefaultStates() {
+		setPreviewImage(defaultImage);
+		handleDisplayRenders(); // default value resets display states
+		setFileServerID();
+		setFile();
 	}
-	// const processedFileDownloadLink = ``
+
+	function copyDownloadLinkToClipboard() {
+		navigator.clipboard.writeText(fileServerID);
+	}
 
 	return (
 		<Container>
@@ -161,9 +164,16 @@ const App = () => {
 					></div>
 					<div className="download">
 						<div className="download-link">{fileServerID}</div>
-						<button className="download-btn">Copy Link</button>
+						<button
+							className="download-btn"
+							onClick={copyDownloadLinkToClipboard}
+						>
+							Copy Link
+						</button>
 					</div>
-					<p className='reset' onClick={resetToDefaultStates}>Upload another file</p>
+					<p className="reset" onClick={resetToDefaultStates}>
+						Upload another file
+					</p>
 				</div>
 			)}
 		</Container>
@@ -413,13 +423,12 @@ const Container = styled.div`
 				font-size: 0.6rem;
 				line-height: 12px;
 				/* identical to box height */
-				
+
 				text-align: center;
 				letter-spacing: -0.035em;
 			}
-			
 		}
-		.reset{
+		.reset {
 			font-size: 0.9rem;
 			font-family: "Poppins";
 			font-style: normal;
@@ -428,7 +437,7 @@ const Container = styled.div`
 			cursor: pointer;
 			opacity: 60%;
 		}
-		.reset:hover{
+		.reset:hover {
 			opacity: 100%;
 		}
 	}
