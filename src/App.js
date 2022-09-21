@@ -3,18 +3,17 @@ import styled from "styled-components";
 import defaultImage from "./assets/default-preview.svg";
 import checkIcon from "./assets/check-icon.svg";
 import { motion } from "framer-motion";
+
+import axios from "axios";
 const App = () => {
 	const [file, setFile] = useState();
+	const [fileServerID, setFileServerID] = ('')
 	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
 
 	const drop = useRef(null);
 	const input = useRef(null);
-
-	const onUpload = (files) => {
-		console.log(files);
-	};
 
 	function appendEventListeners() {
 		drop.current.addEventListener("dragover", handleFileDragOver);
@@ -28,7 +27,6 @@ const App = () => {
 		};
 	}
 	useEffect(() => {
-		// appendEventListeners()
 		if (!isFileUploading && !isFileUploaded) {
 			appendEventListeners();
 		}
@@ -46,7 +44,6 @@ const App = () => {
 		const { files } = e.dataTransfer;
 
 		if (files && files.length) {
-			onUpload(files);
 			const filePath = URL.createObjectURL(files[0]);
 			setPreviewImage(filePath);
 			setFile(filePath);
@@ -60,11 +57,36 @@ const App = () => {
 	function handleInput(e) {
 		const filePath = URL.createObjectURL(e.target.files[0]);
 		setPreviewImage(filePath);
-		setFile(filePath);
+		saveFile(e, filePath);
 	}
 
-	function uploadFile() {
+	function saveFile(e, filePath) {
+		const newFile = {
+			name: e.target.files[0].name,
+			path: filePath,
+			data: e.target.files[0],
+		};
+		setFile(newFile);
+	}
+
+	async function uploadFile() {
 		setIsFileUploading(true);
+		
+		const formData = new FormData();
+		formData.append("file", file.data);
+		try {
+		  const response = await axios({
+			method: "post",
+			url: "http://localhost:3003/uploads",
+			data: formData,
+			headers: { "Content-Type": "multipart/form-data" },
+		  });
+		  setFileServerID(response.data.imageID)
+		} catch(error) {
+		  console.log(error)
+		}
+
+
 	}
 	return (
 		<Container>
@@ -94,7 +116,6 @@ const App = () => {
 					<div className="container">
 						<motion.div
 							className="element"
-							//  initial={{ x: "100%" }}
 							animate={{ x: 230 }}
 							transition={{
 								repeat: Infinity,
