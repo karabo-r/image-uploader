@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import defaultImage from "./assets/default-preview.svg";
-import checkIcon from "./assets/check-icon.svg";
 import { motion } from "framer-motion";
+import defaultImage from "./assets/default-preview.svg";
 
 import axios from "axios";
 const App = () => {
-	const [file, setFile] = useState('');
-	const [fileServerID, setFileServerID] = useState();
+	const [file, setFile] = useState("");
+	const [fileServerID, setFileServerID] = useState("asdf");
 	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
@@ -61,7 +60,6 @@ const App = () => {
 		const filePath = URL.createObjectURL(e.target.files[0]);
 		setPreviewImage(filePath);
 		saveFile(e, filePath);
-		
 	}
 
 	function saveFile(e, filePath) {
@@ -95,6 +93,11 @@ const App = () => {
 
 	function handleDisplayRenders(string) {
 		switch (string) {
+			case "upload":
+				setPreviewImage(defaultImage);
+				setIsFileUploaded(false);
+				setIsFileUploading(false);
+				break;
 			case "uploading":
 				setIsFileUploading(true);
 				break;
@@ -103,11 +106,12 @@ const App = () => {
 				setIsFileUploading(false);
 				break;
 			case "download":
-				resetToDefaultStates() // default value reset all displays
+				resetToDefaultStates(); // default value resets display states
 				setFileDownload(true);
 				break;
 			// eslint-disable-next-line no-fallthrough
 			default:
+				// resetToDefaultStates()
 				setFileDownload(false);
 				setIsFileUploaded(false);
 				setIsFileUploading(false);
@@ -132,15 +136,18 @@ const App = () => {
 
 	async function previewFile() {
 		// get the image from the backend using the provided ID
-		const response =  await axios.post(`http://localhost:3003/download/${fileServerID}`)
+		const response = await axios.post(
+			`http://localhost:3003/download/${fileServerID}`,
+		);
 
-		const returnedImageBuffer = response.data.image.data.data
-		const base64String = btoa(String.fromCharCode(...new Uint8Array(returnedImageBuffer)));
-		const newPath = `data:image/png;base64,${base64String}`
+		const returnedImageBuffer = response.data.image.data.data;
+		const base64String = btoa(
+			String.fromCharCode(...new Uint8Array(returnedImageBuffer)),
+		);
+		const newPath = `data:image/png;base64,${base64String}`;
 
-		setFile({path:newPath}) 
-		setPreviewImage(newPath)
-		
+		setFile({ path: newPath });
+		setPreviewImage(newPath);
 	}
 
 	function downloadFile() {
@@ -152,14 +159,19 @@ const App = () => {
 		<Container>
 			{!isFileUploading && !isFileUploaded && !isFileDownload && (
 				<div className="card">
-					<h1>Upload your image</h1>
-					<p>File should be a Png, Jpeg...</p>
+					<h1 className="card-title">Upload your image</h1>
+					<p className="card-description">File should be a Png, Jpeg...</p>
 					<div
 						ref={drop}
-						className="preview"
+						className="card-image-preview"
 						style={{ backgroundImage: `url(${previewImage})` }}
 					>
-						<input ref={input} type="file" onChange={(e) => handleInput(e)} />
+						<input
+							ref={input}
+							type="file"
+							onChange={(e) => handleInput(e)}
+							style={{ display: "none" }}
+						/>
 					</div>
 					{!file && (
 						<>
@@ -171,11 +183,12 @@ const App = () => {
 			)}
 			{isFileDownload && (
 				<div className="card">
-					<h1>Download your image</h1>
-					{!file && <p>Please input an ID</p>}
+					<h1 className="card-title">Download your image</h1>
+					{!file && <p className="card-description">Please input an ID</p>}
+
 					{file && (
 						<div
-							className="preview"
+							className="card-image-preview"
 							style={{ backgroundImage: `url(${previewImage})` }}
 						></div>
 					)}
@@ -194,8 +207,8 @@ const App = () => {
 			)}
 
 			{isFileUploading && (
-				<div className="loading">
-					<h1>Uploading...</h1>
+				<div className="file-loading">
+					<h1 className="file-loading-title">Uploading...</h1>
 					<div className="container">
 						<motion.div
 							className="element"
@@ -212,7 +225,6 @@ const App = () => {
 
 			{isFileUploaded && (
 				<div className="file-uploaded">
-					<div className="check-icon"></div>
 					<h1>Uploaded Successfully</h1>
 					<div
 						className="preview"
@@ -253,18 +265,37 @@ const App = () => {
 };
 
 const Container = styled.div`
+	font-family: "Poppins";
+	font-style: normal;
 	height: 100vh;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 
 	input {
-		padding: 0.5rem;
-		/* border-radius: 5px; */
+		width: 70%;
 		outline: none;
-		/* border: none; */
+		padding: 0.5rem;
 	}
 
+	button {
+		cursor: pointer;
+		font-family: "Noto Sans";
+
+		font-size: 12px;
+
+		letter-spacing: -0.035em;
+
+		color: #ffffff;
+		background: #2f80ed;
+		outline: none;
+		border: none;
+		padding: 0.5rem 1rem;
+	}
+
+	button:hover {
+		background-color: #0b428c;
+	}
 	.download-button {
 		position: absolute;
 		bottom: 1.5rem;
@@ -278,59 +309,34 @@ const Container = styled.div`
 		opacity: 100%;
 	}
 	.card {
-		line-height: 1rem;
 		display: flex;
-		flex-direction: column;
 		align-items: center;
-		justify-content: center;
 		width: 25rem;
+		flex-direction: column;
 		height: 25rem;
-		max-width: 25rem;
-		max-height: 25rem;
-		background-color: rebeccapurple;
-
+		justify-content: center;
 		background: #ffffff;
 		box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 		border-radius: 12px;
 
-		h1 {
-			/* font-size: 1.5rem; */
-			font-family: "Poppins";
-			font-style: normal;
+		.card-title {
+			font-size: 1.5rem;
 			font-weight: 500;
 			font-size: 18px;
 			line-height: 27px;
-			/* identical to box height */
 			margin-bottom: 1rem;
 
 			letter-spacing: -0.035em;
-
-			/* Gray 2 */
-
-			/* color: #4f4f4f; */
 		}
 
 		p {
-			font-family: "Poppins";
 			margin-bottom: 1rem;
-			font-style: normal;
+
 			font-weight: 500;
-			font-size: 10px;
-			line-height: 15px;
-			/* identical to box height */
-
-			text-align: center;
-			letter-spacing: -0.035em;
-
-			/* Gray 3 */
-
-			/* color: #828282; */
+			font-size: 11px;
 		}
 
-		.preview {
-			box-sizing: border-box;
-
-			/* position: absolute; */
+		.card-image-preview {
 			width: 338px;
 			height: 218.9px;
 			left: 551.82px;
@@ -338,9 +344,7 @@ const Container = styled.div`
 
 			background: #f6f8fb;
 			border: 2px dashed #97bef4;
-			border-radius: 12px;
-			/* background-image: url(${defaultImage}); */
-			background-size: 12rem;
+			background-size: 13rem;
 			background-position: center;
 			background-repeat: no-repeat;
 
@@ -351,53 +355,30 @@ const Container = styled.div`
 
 		button {
 			margin-top: 1rem;
-			font-family: "Noto Sans";
-			font-style: normal;
-			font-weight: 500;
-			font-size: 12px;
-			line-height: 16px;
-			text-align: center;
-			letter-spacing: -0.035em;
-
-			color: #ffffff;
-			background: #2f80ed;
-			border-radius: 8px;
-			outline: none;
-			border: none;
-			padding: 0.5rem 1rem;
 		}
 	}
 
-	.loading {
+	.file-loading {
 		display: flex;
 		flex-direction: column;
 		padding: 1rem;
-		/* align-items: center;/ */
 		justify-content: center;
 		width: 23rem;
 		height: 7rem;
-		background-color: rebeccapurple;
-		/* max-width: 25rem; */
-		/* max-height: 25rem; */
-		text-align: left;
-		font-family: "Poppins";
-		font-style: normal;
-		font-weight: 500;
+
 		font-size: 18px;
 		line-height: 27px;
-		/* identical to box height */
-		/* padding: 1rem; */
 
 		letter-spacing: -0.035em;
-		background: #ffffff;
+
 		box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 		border-radius: 12px;
 
-		h1 {
+		.file-loading-title {
 			padding-left: 1rem;
 		}
+
 		.container {
-			/* display: flex; */
 			margin-top: 1rem;
 			height: 10px;
 			width: 90%;
@@ -407,8 +388,6 @@ const Container = styled.div`
 			margin-left: 1rem;
 
 			.element {
-				/* border-radius: 8px; */
-				/* position: absolute; */
 				height: 100%;
 				width: 30%;
 				background: red;
@@ -435,30 +414,16 @@ const Container = styled.div`
 		border-radius: 12px;
 		padding: 1rem;
 
-		.check-icon {
-			height: 3rem;
-			width: 3rem;
-			border-radius: 100%;
-			background-image: url(${checkIcon});
-		}
 		h1 {
-			font-family: "Poppins";
-			font-style: normal;
-			font-weight: 500;
 			font-size: 18px;
 			line-height: 27px;
-			/* identical to box height */
 
-			text-align: center;
 			letter-spacing: -0.035em;
-			margin-top: 1rem;
+			margin-top: 0.5rem;
 			margin-bottom: 1rem;
 		}
 
 		.preview {
-			box-sizing: border-box;
-
-			/* position: absolute; */
 			width: 338px;
 			height: 218.9px;
 			left: 551.82px;
@@ -467,7 +432,6 @@ const Container = styled.div`
 			background: #f6f8fb;
 			border: 2px dashed #97bef4;
 			border-radius: 12px;
-			/* background-image: url(${defaultImage}); */
 			background-size: 12rem;
 			background-position: center;
 			background-repeat: no-repeat;
@@ -481,39 +445,13 @@ const Container = styled.div`
 			display: grid;
 			grid-template-columns: 70% auto;
 			background: #f6f8fb;
-			/* Gray 5 */
 			align-items: center;
 
 			border: 1px solid #e0e0e0;
-			border-radius: 8px;
-
-			button {
-				font-family: "Noto Sans";
-				font-style: normal;
-				font-weight: 500;
-				font-size: 12px;
-				line-height: 16px;
-				text-align: center;
-				letter-spacing: -0.035em;
-
-				color: #ffffff;
-				background: #2f80ed;
-				border-radius: 8px;
-				outline: none;
-				border: none;
-				padding: 0.5rem 1rem;
-			}
 
 			.download-link {
-				/* height: 100%; */
-				/* width: 100%; */
-				/* background-color: gray; */
-				font-family: "Poppins";
-				font-style: normal;
-				font-weight: 500;
-				font-size: 0.6rem;
+				font-size: 0.7rem;
 				line-height: 12px;
-				/* identical to box height */
 
 				text-align: center;
 				letter-spacing: -0.035em;
