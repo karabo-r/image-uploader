@@ -3,6 +3,7 @@ const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
 
 const app = express();
 const PORT = 3003 || process.env.PORT;
@@ -29,12 +30,13 @@ app.get("/", (req, res) => {
 	res.send("<h1>Hello mom</h1>");
 });
 
-app.post("/uploads", (req, res) => {
+app.post("/uploads", fileUpload(), (req, res) => {
+	const file = req.files.file;
 	const newImage = ImageModel({
-		name: req.body.name,
+		name: file.name,
 		image: {
-			data: req.file,
-			contentType: "image/png",
+			data: file.data,
+			contentType: file.mimetype,
 		},
 	});
 
@@ -44,7 +46,6 @@ app.post("/uploads", (req, res) => {
 			res.json({ imageID: response.id });
 		})
 		.catch((err) => console.log(err));
-	// res.end();
 });
 
 // return an image from a link
@@ -52,6 +53,10 @@ app.get("/download/:id", async (req, res) => {
 	const imageID = req.params.id;
 	const returnImage = await ImageModel.findById(imageID);
 	res.json(returnImage);
+});
+
+app.post("test", (req, res) => {
+	console.log(req.body);
 });
 
 app.listen(PORT, () => console.log("Server is live:" + PORT));
