@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 import axios from "axios";
 const App = () => {
-	const [file, setFile] = useState();
+	const [file, setFile] = useState('');
 	const [fileServerID, setFileServerID] = useState();
 	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
@@ -16,7 +16,7 @@ const App = () => {
 	const drop = useRef(null);
 	const input = useRef(null);
 	const downloadInput = useRef(null);
-	const downloadButton = useRef(null)
+	const downloadButton = useRef(null);
 
 	function appendEventListeners() {
 		drop.current.addEventListener("dragover", handleFileDragOver);
@@ -61,6 +61,7 @@ const App = () => {
 		const filePath = URL.createObjectURL(e.target.files[0]);
 		setPreviewImage(filePath);
 		saveFile(e, filePath);
+		
 	}
 
 	function saveFile(e, filePath) {
@@ -70,6 +71,7 @@ const App = () => {
 			data: e.target.files[0],
 		};
 		setFile(newFile);
+		console.log(newFile);
 	}
 
 	async function uploadFile() {
@@ -101,12 +103,12 @@ const App = () => {
 				setIsFileUploading(false);
 				break;
 			case "download":
-				handleDisplayRenders() // default value reset all displays
-				setFileDownload(true)
+				resetToDefaultStates() // default value reset all displays
+				setFileDownload(true);
 				break;
 			// eslint-disable-next-line no-fallthrough
 			default:
-				setFileDownload(false)
+				setFileDownload(false);
 				setIsFileUploaded(false);
 				setIsFileUploading(false);
 		}
@@ -128,15 +130,24 @@ const App = () => {
 		setFileServerID(downloadInput.current.value);
 	}
 
-	function previewFile() {
-		setFile("asdf");
-		setPreviewImage(defaultImage);
+	async function previewFile() {
+		// get the image from the backend using the provided ID
+		const response =  await axios.post(`http://localhost:3003/download/${fileServerID}`)
+
+		const returnedImageBuffer = response.data.image.data.data
+		const base64String = btoa(String.fromCharCode(...new Uint8Array(returnedImageBuffer)));
+		const newPath = `data:image/png;base64,${base64String}`
+
+		setFile({path:newPath}) 
+		setPreviewImage(newPath)
+		
 	}
 
-	function downloadFile(){
-		downloadButton.current.href = defaultImage
-		downloadButton.current.click()
+	function downloadFile() {
+		downloadButton.current.href = previewImage;
+		downloadButton.current.click();
 	}
+
 	return (
 		<Container>
 			{!isFileUploading && !isFileUploaded && !isFileDownload && (
@@ -175,8 +186,8 @@ const App = () => {
 							onChange={handleFileServerID}
 						/>
 					)}
-					<a ref={downloadButton} style={{display:'none'}} download/>
-					
+					<a ref={downloadButton} style={{ display: "none" }} download />
+
 					{!file && <button onClick={previewFile}>Preview</button>}
 					{file && <button onClick={downloadFile}>Download</button>}
 				</div>
@@ -199,7 +210,7 @@ const App = () => {
 				</div>
 			)}
 
-			 {isFileUploaded && (
+			{isFileUploaded && (
 				<div className="file-uploaded">
 					<div className="check-icon"></div>
 					<h1>Uploaded Successfully</h1>
@@ -220,12 +231,22 @@ const App = () => {
 						Upload another file
 					</p>
 				</div>
-			)} 
+			)}
 			{!isFileDownload && (
-				<p className="download-button" onClick={()=>handleDisplayRenders('download')}>Download a file using an ID</p>
+				<p
+					className="download-button"
+					onClick={() => handleDisplayRenders("download")}
+				>
+					Download a file using an ID
+				</p>
 			)}
 			{isFileDownload && (
-				<p className="download-button" onClick={()=>handleDisplayRenders('default')} >Upload a file and get an ID</p>
+				<p
+					className="download-button"
+					onClick={() => handleDisplayRenders("default")}
+				>
+					Upload a file and get an ID
+				</p>
 			)}
 		</Container>
 	);
