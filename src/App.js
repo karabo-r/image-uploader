@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 const App = () => {
 	const [file, setFile] = useState();
-	const [fileServerID, setFileServerID] = ('')
+	const [fileServerID, setFileServerID] = useState("");
 	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
@@ -71,23 +71,40 @@ const App = () => {
 
 	async function uploadFile() {
 		setIsFileUploading(true);
-		
+
 		const formData = new FormData();
 		formData.append("file", file.data);
 		try {
-		  const response = await axios({
-			method: "post",
-			url: "http://localhost:3003/uploads",
-			data: formData,
-			headers: { "Content-Type": "multipart/form-data" },
-		  });
-		  setFileServerID(response.data.imageID)
-		} catch(error) {
-		  console.log(error)
+			const response = await axios({
+				method: "post",
+				url: "http://localhost:3003/uploads",
+				data: formData,
+				headers: { "Content-Type": "multipart/form-data" },
+			});
+			setFileServerID(response.data.imageID);
+			handleDisplayRenders("uploaded");
+		} catch (error) {
+			console.log(error);
 		}
-
-
 	}
+
+	function handleDisplayRenders(string) {
+		switch (string) {
+			case "uploading":
+				setIsFileUploading(true);
+				break;
+			case "uploaded":
+				setIsFileUploaded(true);
+				setIsFileUploading(false);
+				break;
+			// eslint-disable-next-line no-fallthrough
+			default:
+				setIsFileUploaded(false);
+				setIsFileUploading(false);
+		}
+		return;
+	}
+	
 	return (
 		<Container>
 			{!isFileUploading && !isFileUploaded && (
@@ -135,7 +152,7 @@ const App = () => {
 						style={{ backgroundImage: `url(${previewImage})` }}
 					></div>
 					<div className="download">
-						<div className="download-link"></div>
+						<div className="download-link">{fileServerID}</div>
 						<button className="download-btn">Copy Link</button>
 					</div>
 				</div>
