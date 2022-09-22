@@ -47,8 +47,7 @@ const App = () => {
 
 		if (files && files.length) {
 			const filePath = URL.createObjectURL(files[0]);
-			setPreviewImage(filePath);
-			setFile(filePath);
+			setFile({ name: files[0].name, imagePath: filePath, data: files[0] });
 		}
 	};
 
