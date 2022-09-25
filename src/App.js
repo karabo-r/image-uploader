@@ -5,9 +5,8 @@ import defaultImage from "./assets/default-preview.svg";
 
 import axios from "axios";
 const App = () => {
-	const [file, setFile] = useState("");
+	const [file, setFile] = useState({ imagePath: defaultImage });
 	const [fileServerID, setFileServerID] = useState("asdf");
-	const [previewImage, setPreviewImage] = useState(defaultImage);
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
 	const [isFileDownload, setFileDownload] = useState(false);
@@ -47,7 +46,7 @@ const App = () => {
 
 		if (files && files.length) {
 			const filePath = URL.createObjectURL(files[0]);
-			setFile({ name: files[0].name, imagePath: filePath, data: files[0] });
+			setFile({imagePath: filePath, data: files[0] });
 		}
 	};
 
@@ -57,18 +56,15 @@ const App = () => {
 
 	function handleInput(e) {
 		const filePath = URL.createObjectURL(e.target.files[0]);
-		setPreviewImage(filePath);
 		saveFile(e, filePath);
 	}
 
 	function saveFile(e, filePath) {
 		const newFile = {
-			name: e.target.files[0].name,
-			path: filePath,
+			imagePath: filePath,
 			data: e.target.files[0],
 		};
 		setFile(newFile);
-		console.log(newFile);
 	}
 
 	async function uploadFile() {
@@ -93,7 +89,7 @@ const App = () => {
 	function handleDisplayRenders(string) {
 		switch (string) {
 			case "upload":
-				setPreviewImage(defaultImage);
+				setFile({ imagePath: defaultImage });
 				setIsFileUploaded(false);
 				setIsFileUploading(false);
 				break;
@@ -119,10 +115,10 @@ const App = () => {
 	}
 
 	function resetToDefaultStates() {
-		setPreviewImage(defaultImage);
+		// setPreviewImage(defaultImage);
+		setFile({ imagePath: defaultImage });
 		handleDisplayRenders(); // default value resets display states
 		setFileServerID();
-		setFile();
 	}
 
 	function copyDownloadLinkToClipboard() {
@@ -146,11 +142,11 @@ const App = () => {
 		const newPath = `data:image/png;base64,${base64String}`;
 
 		setFile({ path: newPath });
-		setPreviewImage(newPath);
+		// setPreviewImage(newPath);
 	}
 
 	function downloadFile() {
-		downloadButton.current.href = previewImage;
+		downloadButton.current.href = file.imagePath;
 		downloadButton.current.click();
 	}
 
@@ -163,7 +159,7 @@ const App = () => {
 					<div
 						ref={drop}
 						className="card-image-preview"
-						style={{ backgroundImage: `url(${previewImage})` }}
+						style={{ backgroundImage: `url(${file.imagePath})` }}
 					>
 						<input
 							ref={input}
@@ -172,12 +168,12 @@ const App = () => {
 							style={{ display: "none" }}
 						/>
 					</div>
-					{!file && (
+					{!file.data && (
 						<>
 							<button onClick={handleInputClick}>Choose a file</button>
 						</>
 					)}
-					{file && <button onClick={uploadFile}>Upload</button>}
+					{file.data && <button onClick={uploadFile}>Upload</button>}
 				</div>
 			)}
 			{isFileDownload && (
@@ -188,7 +184,7 @@ const App = () => {
 					{file && (
 						<div
 							className="card-image-preview"
-							style={{ backgroundImage: `url(${previewImage})` }}
+							style={{ backgroundImage: `url(${file.imagePath})` }}
 						></div>
 					)}
 					{!file && (
@@ -227,7 +223,7 @@ const App = () => {
 					<h1>Uploaded Successfully</h1>
 					<div
 						className="preview"
-						style={{ backgroundImage: `url(${previewImage})` }}
+						style={{ backgroundImage: `url(${file.imagePath})` }}
 					></div>
 					<div className="download">
 						<div className="download-link">{fileServerID}</div>
