@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
 import defaultImage from "./assets/default-preview.svg";
 
 import axios from "axios";
+import Loading from "./components/Loading";
+import Download from "./components/Download";
+import UploadSuccess from "./components/UploadSuccess";
+import Upload from "./components/Upload";
 const App = () => {
 	const [file, setFile] = useState({ imagePath: defaultImage });
-	const [fileServerID, setFileServerID] = useState("asdf");
+	const [fileServerID, setFileServerID] = useState("");
 	const [isFileUploading, setIsFileUploading] = useState(false);
 	const [isFileUploaded, setIsFileUploaded] = useState(false);
 	const [isFileDownload, setFileDownload] = useState(false);
@@ -46,7 +49,7 @@ const App = () => {
 
 		if (files && files.length) {
 			const filePath = URL.createObjectURL(files[0]);
-			setFile({imagePath: filePath, data: files[0] });
+			setFile({ imagePath: filePath, data: files[0] });
 		}
 	};
 
@@ -104,9 +107,7 @@ const App = () => {
 				resetToDefaultStates(); // default value resets display states
 				setFileDownload(true);
 				break;
-			// eslint-disable-next-line no-fallthrough
 			default:
-				// resetToDefaultStates()
 				setFileDownload(false);
 				setIsFileUploaded(false);
 				setIsFileUploading(false);
@@ -115,7 +116,6 @@ const App = () => {
 	}
 
 	function resetToDefaultStates() {
-		// setPreviewImage(defaultImage);
 		setFile({ imagePath: defaultImage });
 		handleDisplayRenders(); // default value resets display states
 		setFileServerID();
@@ -131,114 +131,68 @@ const App = () => {
 
 	async function previewFile() {
 		// get the image from the backend using the provided ID
-		const response = await axios.post(
+		const response = await axios.get(
 			`http://localhost:3003/download/${fileServerID}`,
 		);
 
-		const returnedImageBuffer = response.data.image.data.data;
-		const base64String = btoa(
-			String.fromCharCode(...new Uint8Array(returnedImageBuffer)),
-		);
-		const newPath = `data:image/png;base64,${base64String}`;
+		function _arrayBufferToBase64(buffer) {
+			var binary = "";
+			var bytes = new Uint8Array(buffer);
+			var len = bytes.byteLength;
+			for (var i = 0; i < len; i++) {
+				binary += String.fromCharCode(bytes[i]);
+			}
+			return window.btoa(binary);
+		}
 
-		setFile({ path: newPath });
-		// setPreviewImage(newPath);
+		console.log(response);
+		const returnedImageBuffer = response.data.image.data.data;
+		const base64String = _arrayBufferToBase64(returnedImageBuffer);
+
+		const newPath = `data:image/png;base64,${base64String}`;
+		setFile({ data: true, imagePath: newPath });
 	}
 
 	function downloadFile() {
-		downloadButton.current.href = file.imagePath;
+		downloadButton.current.href = `${file.imagePath}`;
 		downloadButton.current.click();
 	}
+
+	const propsCollection = {
+		file,
+		setFile,
+		fileServerID,
+		setFileServerID,
+		isFileUploading,
+		setIsFileUploading,
+		isFileUploaded,
+		setIsFileUploaded,
+		isFileDownload,
+		setFileDownload,
+		handleInput,
+		downloadFile,
+		downloadInput,
+		handleFileServerID,
+		previewFile,
+		resetToDefaultStates,
+		copyDownloadLinkToClipboard,
+		handleInputClick,
+		uploadFile,
+		drop,
+		input,
+		downloadButton,
+	};
 
 	return (
 		<Container>
 			{!isFileUploading && !isFileUploaded && !isFileDownload && (
-				<div className="card">
-					<h1 className="card-title">Upload your image</h1>
-					<p className="card-description">File should be a Png, Jpeg...</p>
-					<div
-						ref={drop}
-						className="card-image-preview"
-						style={{ backgroundImage: `url(${file.imagePath})` }}
-					>
-						<input
-							ref={input}
-							type="file"
-							onChange={(e) => handleInput(e)}
-							style={{ display: "none" }}
-						/>
-					</div>
-					{!file.data && (
-						<>
-							<button onClick={handleInputClick}>Choose a file</button>
-						</>
-					)}
-					{file.data && <button onClick={uploadFile}>Upload</button>}
-				</div>
+				<Upload {...propsCollection} />
 			)}
-			{isFileDownload && (
-				<div className="card">
-					<h1 className="card-title">Download your image</h1>
-					{!file && <p className="card-description">Please input an ID</p>}
+			{isFileDownload && <Download {...propsCollection} />}
 
-					{file && (
-						<div
-							className="card-image-preview"
-							style={{ backgroundImage: `url(${file.imagePath})` }}
-						></div>
-					)}
-					{!file && (
-						<input
-							ref={downloadInput}
-							value={fileServerID}
-							onChange={handleFileServerID}
-						/>
-					)}
-					<a ref={downloadButton} style={{ display: "none" }} download />
+			{isFileUploading && <Loading />}
 
-					{!file && <button onClick={previewFile}>Preview</button>}
-					{file && <button onClick={downloadFile}>Download</button>}
-				</div>
-			)}
-
-			{isFileUploading && (
-				<div className="file-loading">
-					<h1 className="file-loading-title">Uploading...</h1>
-					<div className="container">
-						<motion.div
-							className="element"
-							animate={{ x: 230 }}
-							transition={{
-								repeat: Infinity,
-								repeatType: "mirror",
-								duration: 1.5,
-							}}
-						></motion.div>
-					</div>
-				</div>
-			)}
-
-			{isFileUploaded && (
-				<div className="file-uploaded">
-					<h1>Uploaded Successfully</h1>
-					<div
-						className="preview"
-						style={{ backgroundImage: `url(${file.imagePath})` }}
-					></div>
-					<div className="download">
-						<div className="download-link">{fileServerID}</div>
-						<button
-							className="download-btn"
-							onClick={copyDownloadLinkToClipboard}
-						>
-							Copy Link
-						</button>
-					</div>
-					<p className="reset" onClick={resetToDefaultStates}>
-						Upload another file
-					</p>
-				</div>
-			)}
+			{isFileUploaded && <UploadSuccess {...propsCollection} />}
 			{!isFileDownload && (
 				<p
 					className="download-button"
@@ -250,7 +204,7 @@ const App = () => {
 			{isFileDownload && (
 				<p
 					className="download-button"
-					onClick={() => handleDisplayRenders("default")}
+					onClick={() => handleDisplayRenders()}
 				>
 					Upload a file and get an ID
 				</p>
