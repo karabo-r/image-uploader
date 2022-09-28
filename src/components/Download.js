@@ -1,28 +1,74 @@
-import React from "react";
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useRef, useState } from "react";
+import defaultImage from "../assets/default-preview.svg";
+import axios from "axios";
 
-const Download = (props) => {
+const Download = () => {
+	const [file, setFile] = useState({
+		imagePath: defaultImage,
+		imageID: "",
+	});
+
+	const downloadButton = useRef(null);
+
+	function handleSetImageID(e) {
+		setFile({ ...file, imageID: e.target.value });
+	}
+
+	async function previewFetchedImage() {
+		// fetch using the provided ID
+		const response = await axios.get(
+			`http://localhost:3003/download/${file.imageID}`,
+		);
+
+		function _arrayBufferToBase64(buffer) {
+			var binary = "";
+			var bytes = new Uint8Array(buffer);
+			var len = bytes.byteLength;
+			for (var i = 0; i < len; i++) {
+				binary += String.fromCharCode(bytes[i]);
+			}
+			return window.btoa(binary);
+		}
+
+		const returnedImageBuffer = response.data.image.data.data;
+		const base64String = _arrayBufferToBase64(returnedImageBuffer);
+
+		const newImagePath = `data:image/png;base64,${base64String}`;
+		setFile({ data: true, imagePath: newImagePath });
+	}
+
+	function saveImageTolocalStorage() {
+		// attached to a hiiden a tag - <a download />
+		downloadButton.current.href = file.imagePath;
+		downloadButton.current.click();
+	}
+
 	return (
 		<div className="card">
 			<h1 className="card-title">Download your image</h1>
-			{!props.file && <p className="card-description">Please input an ID</p>}
+			<p className="card-description">Please input an ID</p>
 
-			{props.file.data && (
+			{file.data && (
 				<div
 					className="card-image-preview"
-					style={{ backgroundImage: `url(${props.file.imagePath})` }}
+					style={{ backgroundImage: `url(${file.imagePath})` }}
 				></div>
 			)}
-			{!props.file.data && (  
+			{!file.data && (
 				<input
-					ref={props.downloadInput}
-					value={props.fileServerID}
-					onChange={props.handleFileServerID}
+					placeholder="Image ID"
+					value={file.imageID}
+					onChange={(e) => handleSetImageID(e)}
 				/>
 			)}
-			{props.file.imagePath && <a ref={props.downloadButton} style={{ display: "none" }} download />}
+			{file.data && (
+				// eslint-disable-next-line jsx-a11y/anchor-has-content
+				<a ref={downloadButton} style={{ display: "none" }} download />
+			)}
 
-			{!props.file.data && <button onClick={props.previewFile}>Preview</button>}
-			{props.file.data && <button onClick={props.downloadFile}>Download</button>}
+			{!file.data && <button onClick={previewFetchedImage}>Preview</button>}
+			{file.data && <button onClick={saveImageTolocalStorage}>Download</button>}
 		</div>
 	);
 };
