@@ -1,214 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import defaultImage from "./assets/default-preview.svg";
-
-import axios from "axios";
-import Loading from "./components/Loading";
-import Download from "./components/Download";
-import UploadSuccess from "./components/UploadSuccess";
 import Upload from "./components/Upload";
+import Download from "./components/Download";
+import { Routes, Route } from "react-router-dom";
+
 const App = () => {
-	const [file, setFile] = useState({ imagePath: defaultImage });
-	const [fileServerID, setFileServerID] = useState("");
-	const [isFileUploading, setIsFileUploading] = useState(false);
-	const [isFileUploaded, setIsFileUploaded] = useState(false);
-	const [isFileDownload, setFileDownload] = useState(false);
-
-	const drop = useRef(null);
-	const input = useRef(null);
-	const downloadInput = useRef(null);
-	const downloadButton = useRef(null);
-
-	function appendEventListeners() {
-		drop.current.addEventListener("dragover", handleFileDragOver);
-		drop.current.addEventListener("drop", handleFileDrop);
-		drop.current.addEventListener("click", handleInputClick);
-
-		return () => {
-			drop.current.removeEventListener("dragover", handleFileDragOver);
-			drop.current.removeEventListener("drop", handleFileDrop);
-			drop.current.removeEventListener("click", handleInputClick);
-		};
-	}
-	useEffect(() => {
-		if (!isFileUploading && !isFileUploaded && !isFileDownload) {
-			appendEventListeners();
-		}
-	});
-
-	const handleFileDragOver = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-	};
-
-	const handleFileDrop = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-
-		const { files } = e.dataTransfer;
-
-		if (files && files.length) {
-			const filePath = URL.createObjectURL(files[0]);
-			setFile({ imagePath: filePath, data: files[0] });
-		}
-	};
-
-	function handleInputClick() {
-		input.current.click();
-	}
-
-	function handleInput(e) {
-		const filePath = URL.createObjectURL(e.target.files[0]);
-		saveFile(e, filePath);
-	}
-
-	function saveFile(e, filePath) {
-		const newFile = {
-			imagePath: filePath,
-			data: e.target.files[0],
-		};
-		setFile(newFile);
-	}
-
-	async function uploadFile() {
-		setIsFileUploading(true);
-
-		const formData = new FormData();
-		formData.append("file", file.data);
-		try {
-			const response = await axios({
-				method: "post",
-				url: "http://localhost:3003/uploads",
-				data: formData,
-				headers: { "Content-Type": "multipart/form-data" },
-			});
-			setFileServerID(response.data.imageID);
-			handleDisplayRenders("uploaded");
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
-	function handleDisplayRenders(string) {
-		switch (string) {
-			case "upload":
-				setFile({ imagePath: defaultImage });
-				setIsFileUploaded(false);
-				setIsFileUploading(false);
-				break;
-			case "uploading":
-				setIsFileUploading(true);
-				break;
-			case "uploaded":
-				setIsFileUploaded(true);
-				setIsFileUploading(false);
-				break;
-			case "download":
-				resetToDefaultStates(); // default value resets display states
-				setFileDownload(true);
-				break;
-			default:
-				setFileDownload(false);
-				setIsFileUploaded(false);
-				setIsFileUploading(false);
-		}
-		return;
-	}
-
-	function resetToDefaultStates() {
-		setFile({ imagePath: defaultImage });
-		handleDisplayRenders(); // default value resets display states
-		setFileServerID();
-	}
-
-	function copyDownloadLinkToClipboard() {
-		navigator.clipboard.writeText(fileServerID);
-	}
-
-	function handleFileServerID() {
-		setFileServerID(downloadInput.current.value);
-	}
-
-	async function previewFile() {
-		// get the image from the backend using the provided ID
-		const response = await axios.get(
-			`http://localhost:3003/download/${fileServerID}`,
-		);
-
-		function _arrayBufferToBase64(buffer) {
-			var binary = "";
-			var bytes = new Uint8Array(buffer);
-			var len = bytes.byteLength;
-			for (var i = 0; i < len; i++) {
-				binary += String.fromCharCode(bytes[i]);
-			}
-			return window.btoa(binary);
-		}
-
-		console.log(response);
-		const returnedImageBuffer = response.data.image.data.data;
-		const base64String = _arrayBufferToBase64(returnedImageBuffer);
-
-		const newPath = `data:image/png;base64,${base64String}`;
-		setFile({ data: true, imagePath: newPath });
-	}
-
-	function downloadFile() {
-		downloadButton.current.href = `${file.imagePath}`;
-		downloadButton.current.click();
-	}
-
-	const propsCollection = {
-		file,
-		setFile,
-		fileServerID,
-		setFileServerID,
-		isFileUploading,
-		setIsFileUploading,
-		isFileUploaded,
-		setIsFileUploaded,
-		isFileDownload,
-		setFileDownload,
-		handleInput,
-		downloadFile,
-		downloadInput,
-		handleFileServerID,
-		previewFile,
-		resetToDefaultStates,
-		copyDownloadLinkToClipboard,
-		handleInputClick,
-		uploadFile,
-		drop,
-		input,
-		downloadButton,
-	};
-
 	return (
 		<Container>
-			{!isFileUploading && !isFileUploaded && !isFileDownload && (
-				<Upload {...propsCollection} />
-			)}
-			{isFileDownload && <Download {...propsCollection} />}
-
-			{isFileUploading && <Loading />}
-
-			{isFileUploaded && <UploadSuccess {...propsCollection} />}
-			{!isFileDownload && (
-				<p
-					className="download-button"
-					onClick={() => handleDisplayRenders("download")}
-				>
-					Download a file using an ID
-				</p>
-			)}
-			{isFileDownload && (
-				<p
-					className="download-button"
-					onClick={() => handleDisplayRenders()}
-				>
-					Upload a file and get an ID
-				</p>
-			)}
+			<Routes>
+				<Route path="/" element={<Upload />} />
+				<Route path="/download" element={<Download /> } />
+			</Routes>
 		</Container>
 	);
 };
@@ -246,6 +47,7 @@ const Container = styled.div`
 		background-color: #0b428c;
 	}
 	.download-button {
+		/* font-size:2rem ; */
 		position: absolute;
 		bottom: 1.5rem;
 		font-family: "Poppins";
