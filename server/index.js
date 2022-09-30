@@ -16,13 +16,20 @@ mongoose
 	.connect(`${process.env.MONGODB_URI}`)
 	.then(() => console.log("Connected to database"));
 
-const imageScheme = new mongoose.Schema({
-	name: String,
-	image: {
-		data: Buffer,
-		contentType: String,
+const imageScheme = new mongoose.Schema(
+	{
+		name: String,
+		image: {
+			data: Buffer,
+			contentType: String,
+		},
 	},
-});
+
+	{ timestamps: true },
+);
+
+// delete image data after 24 hours
+imageScheme.index({ createdAt: 1 }, { expireAfterSeconds: 86400 });
 
 const ImageModel = new mongoose.model("ImageModel", imageScheme);
 
@@ -43,6 +50,7 @@ app.post("/uploads", fileUpload(), (req, res) => {
 	newImage
 		.save()
 		.then((response) => {
+			console.log("NEW IMAGE RECIVIED");
 			res.json({ imageID: response.id });
 		})
 		.catch((err) => console.log(err));
