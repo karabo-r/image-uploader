@@ -3,6 +3,8 @@ import defaultImage from "../assets/default-preview.svg";
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UploadSuccess from "./UploadSuccess";
+import Loading from './Loading'
+
 const Upload = () => {
 	const [file, setFile] = useState({ imagePath: defaultImage });
 
@@ -50,6 +52,7 @@ const Upload = () => {
 	};
 
 	const upload = async () => {
+		setFile({...file, status: 'uploading'})
 		const formData = new FormData();
 		formData.append("file", file.data);
 		try {
@@ -59,8 +62,8 @@ const Upload = () => {
 				data: formData,
 				headers: { "Content-Type": "multipart/form-data" },
 			});
-			setFile({ ...file, imageID: response.data.imageID, status: true });
-			console.log(file.imageID);
+			setFile({ ...file, imageID: response.data.imageID, status: "uploaded" });
+			console.log(file);
 		} catch (error) {
 			console.log(error);
 		}
@@ -78,7 +81,7 @@ const Upload = () => {
 
 	return (
 		<>
-			{!file.status && (
+			{!file.data && (
 				<div className="card">
 					<h1 className="card-title">Upload your image</h1>
 					<p className="card-description">File should be a Png, Jpeg...</p>
@@ -94,15 +97,12 @@ const Upload = () => {
 							style={{ display: "none" }}
 						/>
 					</div>
-					{!file.data && (
-						<>
-							<button onClick={handleInputClick}>Choose a file</button>
-						</>
-					)}
+					{!file.data && <button onClick={handleInputClick}>Choose a file</button>}
 					{file.data && <button onClick={upload}>Upload</button>}
 				</div>
 			)}
-			{file.status && <UploadSuccess file={file} />}
+			{file.status ==='uploaded' && <UploadSuccess file={file} />}
+			{file.status === 'uploading' && <Loading name='Uploading'/>}
 			<p className="download-button" onClick={redirectToDownload}>
 				Download image using an ID
 			</p>
