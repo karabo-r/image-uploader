@@ -4,6 +4,9 @@ import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UploadSuccess from "./UploadSuccess";
 import Loading from './Loading'
+import PrimaryButton from "./buttons/PrimaryButton";
+import RedirectButton from "./buttons/RedirectButton";
+import Card from "./Card";
 
 const Upload = () => {
 	const [file, setFile] = useState({ imagePath: defaultImage });
@@ -75,14 +78,16 @@ const Upload = () => {
 		navigate("/download");
 	};
 
-	useEffect(() => {
-		appendEventListeners();
-	}, []);
+	// useEffect(() => {
+	// 	appendEventListeners();
+	// }, []);
+
+
 
 	return (
 		<>
-			{!file.data && (
-				<div className="card">
+			{!file.status && (
+				<Card>
 					<h1 className="card-title">Upload your image</h1>
 					<p className="card-description">File should be a Png, Jpeg...</p>
 					<div
@@ -97,15 +102,14 @@ const Upload = () => {
 							style={{ display: "none" }}
 						/>
 					</div>
-					{!file.data && <button onClick={handleInputClick}>Choose a file</button>}
-					{file.data && <button onClick={upload}>Upload</button>}
-				</div>
+					{!file.data && <PrimaryButton onClick={handleInputClick} name="Chooseasd a file" />}
+					{file.data && <PrimaryButton onClick={upload} name='Upload' />}
+					</Card>
+				// </div>
 			)}
 			{file.status ==='uploaded' && <UploadSuccess file={file} />}
 			{file.status === 'uploading' && <Loading name='Uploading'/>}
-			<p className="download-button" onClick={redirectToDownload}>
-				Download image using an ID
-			</p>
+			<RedirectButton onClick={redirectToDownload} name="Download image using an ID" />
 		</>
 	);
 };
