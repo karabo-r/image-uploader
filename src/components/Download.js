@@ -10,22 +10,24 @@ import RedirectButton from "./buttons/RedirectButton";
 import UserInput from "./inputs/UserInput";
 
 const Download = () => {
-	const navigate = useNavigate();
+
 	const [file, setFile] = useState({
 		imagePath: defaultImage,
 		imageID: "",
-		status: "download",
 	});
-
+	
+	const navigate = useNavigate();
 	const downloadButton = useRef(null);
 
-	function handleSetImageID(e) {
-		setFile({ ...file, imageID: e.target.value });
-	}
+	const redirectToUpload = () => navigate("/");
 
-	async function previewFetchedImage() {
-		setFile({ ...file, status: "downloading" });
-		// fetch using the provided ID
+	const updateFileStatus = (status) => setFile({ ...file, status });
+
+	const handleSetImageID = (e) => setFile({ ...file, imageID: e.target.value });
+
+	const previewFetchedImage = async () => {
+		updateFileStatus("downloading");
+		
 		const response = await ImageServices.download(file.imageID);
 
 		function _arrayBufferToBase64(buffer) {
@@ -42,21 +44,18 @@ const Download = () => {
 		const base64String = _arrayBufferToBase64(returnedImageBuffer);
 
 		const newImagePath = `data:image/png;base64,${base64String}`;
-		setFile({ data: true, imagePath: newImagePath, status: "download" });
-	}
+		setFile({ data: true, imagePath: newImagePath });
+	};
 
-	function saveImageTolocalStorage() {
+	const saveImageTolocalStorage = () => {
 		// attached to a hiiden a tag - <a download />
 		downloadButton.current.href = file.imagePath;
 		downloadButton.current.click();
-	}
+	};
 
-	function redirectToUpload() {
-		navigate("/");
-	}
 	return (
 		<>
-			{file.status === "download" && (
+			{!file.status && (
 				<Card>
 					<h1 className="card-title">Download your image</h1>
 					{!file.data && <p className="card-description">Please input an ID</p>}
@@ -67,7 +66,10 @@ const Download = () => {
 						></div>
 					)}
 					{!file.data && (
-						<UserInput value={file.imageID} onChange={(e) => handleSetImageID(e)} />
+						<UserInput
+							value={file.imageID}
+							onChange={(e) => handleSetImageID(e)}
+						/>
 					)}
 					{file.data && (
 						// eslint-disable-next-line jsx-a11y/anchor-has-content
@@ -82,7 +84,7 @@ const Download = () => {
 				</Card>
 			)}
 			{file.status === "downloading" && <Loading name="Downloading" />}
-			<RedirectButton onClick={redirectToUpload} name='Upload an image and get an ID' />
+			<RedirectButton onClick={redirectToUpload} name="Upload an image and get an ID" />
 		</>
 	);
 };

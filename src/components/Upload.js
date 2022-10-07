@@ -1,21 +1,23 @@
-import axios from "axios";
-import defaultImage from "../assets/default-preview.svg";
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Card from "./Card";
+import Loading from "./Loading";
 import UploadSuccess from "./UploadSuccess";
-import Loading from './Loading'
+import defaultImage from "../assets/default-preview.svg";
 import PrimaryButton from "./buttons/PrimaryButton";
 import RedirectButton from "./buttons/RedirectButton";
-import Card from "./Card";
-import ImageServices from '../services/image'
+import ImageServices from "../services/image";
 
 const Upload = () => {
 	const [file, setFile] = useState({ imagePath: defaultImage });
 
 	const navigate = useNavigate();
-
 	const drop = useRef(null);
 	const input = useRef(null);
+
+	const redirectToDownload = () => navigate("/download");
+
+	const updateFileStatus = (status) => setFile({ ...file, status })
 
 	const appendEventListeners = () => {
 		drop.current.addEventListener("dragover", handleFileDragOver);
@@ -30,8 +32,9 @@ const Upload = () => {
 	};
 
 	const handleInput = (e) => {
-		const filePath = URL.createObjectURL(e.target.files[0]);
-		setFile({ data: e.target.files[0], imagePath: filePath });
+		const fileData = e.target.files[0]
+		const filePath = URL.createObjectURL(fileData);
+		setFile({ data: fileData, imagePath: filePath });
 	};
 
 	const handleInputClick = () => {
@@ -50,34 +53,29 @@ const Upload = () => {
 		const { files } = e.dataTransfer;
 
 		if (files && files.length) {
-			const filePath = URL.createObjectURL(files[0]);
-			setFile({ imagePath: filePath, data: files[0] });
+			const fileData = files[0]
+			const filePath = URL.createObjectURL(fileData);
+			setFile({data: fileData, imagePath: filePath});
 		}
 	};
 
 	const upload = async () => {
-		setFile({...file, status: 'uploading'})
+		updateFileStatus("uploading");
+
 		const formData = new FormData();
 		formData.append("file", file.data);
+
 		try {
-			const response = await ImageServices.upload(formData)
+			const response = await ImageServices.upload(formData);
 			setFile({ ...file, imageID: response.data.imageID, status: "uploaded" });
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-	// 6334c6887646856bc1681471 - test imageID
-
-	const redirectToDownload = () => {
-		navigate("/download");
-	};
-
 	useEffect(() => {
 		appendEventListeners();
 	}, []);
-
-
 
 	return (
 		<>
@@ -97,12 +95,14 @@ const Upload = () => {
 							style={{ display: "none" }}
 						/>
 					</div>
-					{!file.data && <PrimaryButton onClick={handleInputClick} name="Chooseasd a file" />}
-					{file.data && <PrimaryButton onClick={upload} name='Upload' />}
-					</Card>
+					{!file.data && (
+						<PrimaryButton onClick={handleInputClick} name="Choose a file" />
+					)}
+					{file.data && <PrimaryButton onClick={upload} name="Upload" />}
+				</Card>
 			)}
-			{file.status ==='uploaded' && <UploadSuccess file={file} />}
-			{file.status === 'uploading' && <Loading name='Uploading'/>}
+			{file.status === "uploaded" && <UploadSuccess file={file} />}
+			{file.status === "uploading" && <Loading name="Uploading" />}
 			<RedirectButton onClick={redirectToDownload} name="Download image using an ID" />
 		</>
 	);
