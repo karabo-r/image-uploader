@@ -7,6 +7,7 @@ import Loading from './Loading'
 import PrimaryButton from "./buttons/PrimaryButton";
 import RedirectButton from "./buttons/RedirectButton";
 import Card from "./Card";
+import ImageServices from '../services/image'
 
 const Upload = () => {
 	const [file, setFile] = useState({ imagePath: defaultImage });
@@ -59,28 +60,22 @@ const Upload = () => {
 		const formData = new FormData();
 		formData.append("file", file.data);
 		try {
-			const response = await axios({
-				method: "post",
-				url: "http://localhost:3003/uploads",
-				data: formData,
-				headers: { "Content-Type": "multipart/form-data" },
-			});
+			const response = await ImageServices.upload(formData)
 			setFile({ ...file, imageID: response.data.imageID, status: "uploaded" });
-			console.log(file);
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-	// 6334c6887646856bc1681471
+	// 6334c6887646856bc1681471 - test imageID
 
 	const redirectToDownload = () => {
 		navigate("/download");
 	};
 
-	// useEffect(() => {
-	// 	appendEventListeners();
-	// }, []);
+	useEffect(() => {
+		appendEventListeners();
+	}, []);
 
 
 
@@ -105,7 +100,6 @@ const Upload = () => {
 					{!file.data && <PrimaryButton onClick={handleInputClick} name="Chooseasd a file" />}
 					{file.data && <PrimaryButton onClick={upload} name='Upload' />}
 					</Card>
-				// </div>
 			)}
 			{file.status ==='uploaded' && <UploadSuccess file={file} />}
 			{file.status === 'uploading' && <Loading name='Uploading'/>}
