@@ -1,15 +1,24 @@
+import { useEffect } from "react";
 import styled from "styled-components";
 import PrimaryButton from "./buttons/PrimaryButton";
+import useNotification from "../hooks/useNotification";
 
 const UploadSuccess = (props) => {
+	const notification = useNotification();
+
 	const file = props.file;
 
 	const copyDownloadLinkToClipboard = () => {
 		navigator.clipboard.writeText(file.imageID);
 	};
 
+	useEffect(() => {
+		notification.update("uploaded");
+	}, []);
+	
 	return (
 		<Container>
+			{notification.display && notification.message}
 			<div className="file-uploaded">
 				<h1>Uploaded Successfully</h1>
 				<div
@@ -18,7 +27,10 @@ const UploadSuccess = (props) => {
 				></div>
 				<div className="download">
 					<div className="download-link">{file.imageID}</div>
-					<PrimaryButton onClick={copyDownloadLinkToClipboard} name="Copy Link" />
+					<PrimaryButton
+						onClick={copyDownloadLinkToClipboard}
+						name="Copy Link"
+					/>
 				</div>
 			</div>
 		</Container>

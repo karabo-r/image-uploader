@@ -7,17 +7,19 @@ import defaultImage from "../assets/default-preview.svg";
 import PrimaryButton from "./buttons/PrimaryButton";
 import RedirectButton from "./buttons/RedirectButton";
 import ImageServices from "../services/image";
+import useNotification from "../hooks/useNotification";
 
 const Upload = () => {
 	const [file, setFile] = useState({ imagePath: defaultImage });
-
+	
+	const notification = useNotification()
 	const navigate = useNavigate();
 	const drop = useRef(null);
 	const input = useRef(null);
 
 	const redirectToDownload = () => navigate("/download");
 
-	const updateFileStatus = (status) => setFile({ ...file, status })
+	const updateFileStatus = (status) => setFile({ ...file, status });
 
 	const appendEventListeners = () => {
 		drop.current.addEventListener("dragover", handleFileDragOver);
@@ -32,9 +34,10 @@ const Upload = () => {
 	};
 
 	const handleInput = (e) => {
-		const fileData = e.target.files[0]
+		const fileData = e.target.files[0];
 		const filePath = URL.createObjectURL(fileData);
 		setFile({ data: fileData, imagePath: filePath });
+		notification.update("upload")
 	};
 
 	const handleInputClick = () => {
@@ -53,9 +56,10 @@ const Upload = () => {
 		const { files } = e.dataTransfer;
 
 		if (files && files.length) {
-			const fileData = files[0]
+			const fileData = files[0];
 			const filePath = URL.createObjectURL(fileData);
-			setFile({data: fileData, imagePath: filePath});
+			setFile({ data: fileData, imagePath: filePath });
+			notification.update("upload")
 		}
 	};
 
@@ -77,8 +81,10 @@ const Upload = () => {
 		appendEventListeners();
 	}, []);
 
+	
 	return (
 		<>
+			{notification.display && notification.message}
 			{!file.status && (
 				<Card>
 					<h1 className="card-title">Upload your image</h1>
@@ -103,7 +109,10 @@ const Upload = () => {
 			)}
 			{file.status === "uploaded" && <UploadSuccess file={file} />}
 			{file.status === "uploading" && <Loading name="Uploading" />}
-			<RedirectButton onClick={redirectToDownload} name="Download image using an ID" />
+			<RedirectButton
+				onClick={redirectToDownload}
+				name="Download image using an ID"
+			/>
 		</>
 	);
 };

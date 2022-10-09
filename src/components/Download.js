@@ -8,14 +8,15 @@ import Card from "./Card";
 import PrimaryButton from "./buttons/PrimaryButton";
 import RedirectButton from "./buttons/RedirectButton";
 import UserInput from "./inputs/UserInput";
+import useNotification from "../hooks/useNotification";
 
 const Download = () => {
-
+	const notification = useNotification();
 	const [file, setFile] = useState({
 		imagePath: defaultImage,
 		imageID: "",
 	});
-	
+
 	const navigate = useNavigate();
 	const downloadButton = useRef(null);
 
@@ -27,8 +28,19 @@ const Download = () => {
 
 	const previewFetchedImage = async () => {
 		updateFileStatus("downloading");
-		
-		const response = await ImageServices.download(file.imageID);
+		try {
+			const response = await ImageServices.download(file.imageID);
+			const returnedImageBuffer = response.data.image.data.data;
+			const base64String = _arrayBufferToBase64(returnedImageBuffer);
+
+			const newImagePath = `data:image/png;base64,${base64String}`;
+			setFile({ data: true, imagePath: newImagePath });
+			notification.update("preview");
+		} catch (error) {
+			notification.custom(`${error.message}. Please check your internet connection`);
+			setFile({ imagePath: defaultImage });
+		}
+		// 63422137cdafd5f70b93165c
 
 		function _arrayBufferToBase64(buffer) {
 			var binary = "";
@@ -39,22 +51,18 @@ const Download = () => {
 			}
 			return window.btoa(binary);
 		}
-
-		const returnedImageBuffer = response.data.image.data.data;
-		const base64String = _arrayBufferToBase64(returnedImageBuffer);
-
-		const newImagePath = `data:image/png;base64,${base64String}`;
-		setFile({ data: true, imagePath: newImagePath });
 	};
 
 	const saveImageTolocalStorage = () => {
 		// attached to a hiiden a tag - <a download />
 		downloadButton.current.href = file.imagePath;
 		downloadButton.current.click();
+		notification.custom("Downloading image");
 	};
 
 	return (
 		<>
+			{notification.display && notification.message}
 			{!file.status && (
 				<Card>
 					<h1 className="card-title">Download your image</h1>
@@ -84,7 +92,8 @@ const Download = () => {
 				</Card>
 			)}
 			{file.status === "downloading" && <Loading name="Downloading" />}
-			<RedirectButton onClick={redirectToUpload} name="Upload an image and get an ID" />
+			<RedirectButton onClick={redirectToUpload} name="Upload an image and get an ID"
+			/>
 		</>
 	);
 };
