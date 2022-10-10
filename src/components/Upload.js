@@ -1,25 +1,25 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "./Card";
 import Loading from "./Loading";
 import UploadSuccess from "./UploadSuccess";
-import defaultImage from "../assets/default-preview.svg";
 import PrimaryButton from "./buttons/PrimaryButton";
 import RedirectButton from "./buttons/RedirectButton";
 import ImageServices from "../services/image";
 import useNotification from "../hooks/useNotification";
+import useFile from "../hooks/useFile";
 
 const Upload = () => {
-	const [file, setFile] = useState({ imagePath: defaultImage });
-	
-	const notification = useNotification()
+
+	const file = useFile();
+	const notification = useNotification();
 	const navigate = useNavigate();
 	const drop = useRef(null);
 	const input = useRef(null);
 
 	const redirectToDownload = () => navigate("/download");
 
-	const updateFileStatus = (status) => setFile({ ...file, status });
+	const updateFileStatus = (imageStatus) => file.update({ ...imageStatus });
 
 	const appendEventListeners = () => {
 		drop.current.addEventListener("dragover", handleFileDragOver);
@@ -36,8 +36,8 @@ const Upload = () => {
 	const handleInput = (e) => {
 		const fileData = e.target.files[0];
 		const filePath = URL.createObjectURL(fileData);
-		setFile({ data: fileData, imagePath: filePath });
-		notification.update("upload")
+		file.update({ imageData: fileData, imagePath: filePath });
+		notification.update("upload");
 	};
 
 	const handleInputClick = () => {
@@ -58,8 +58,8 @@ const Upload = () => {
 		if (files && files.length) {
 			const fileData = files[0];
 			const filePath = URL.createObjectURL(fileData);
-			setFile({ data: fileData, imagePath: filePath });
-			notification.update("upload")
+			file.update({ imageData: fileData, imagePath: filePath });
+			notification.update("upload");
 		}
 	};
 
@@ -67,13 +67,18 @@ const Upload = () => {
 		updateFileStatus("uploading");
 
 		const formData = new FormData();
-		formData.append("file", file.data);
+		formData.append("file", file.imageData);
 
 		try {
 			const response = await ImageServices.upload(formData);
-			setFile({ ...file, imageID: response.data.imageID, status: "uploaded" });
+			file.update({
+				imageID: response.data.imageID,
+				imageStatus: "uploaded",
+			});
 		} catch (error) {
-			console.log(error);
+			notification.custom(error.message);
+			file.reset();
+			appendEventListeners()
 		}
 	};
 
@@ -81,14 +86,13 @@ const Upload = () => {
 		appendEventListeners();
 	}, []);
 
-	
 	return (
 		<>
 			{notification.display && notification.message}
-			{!file.status && (
+			{!file.imageStatus && (
 				<Card>
 					<h1 className="card-title">Upload your image</h1>
-					<p className="card-description">File should be a Png, Jpeg...</p>
+					<p className="card-description">File should be a Png, Jpeg...</p>	
 					<div
 						ref={drop}
 						className="card-image-preview"
@@ -101,18 +105,15 @@ const Upload = () => {
 							style={{ display: "none" }}
 						/>
 					</div>
-					{!file.data && (
+					{!file.imageData && (
 						<PrimaryButton onClick={handleInputClick} name="Choose a file" />
 					)}
-					{file.data && <PrimaryButton onClick={upload} name="Upload" />}
+					{file.imageData && <PrimaryButton onClick={upload} name="Upload" />}
 				</Card>
 			)}
-			{file.status === "uploaded" && <UploadSuccess file={file} />}
-			{file.status === "uploading" && <Loading name="Uploading" />}
-			<RedirectButton
-				onClick={redirectToDownload}
-				name="Download image using an ID"
-			/>
+			{file.imageStatus === "uploaded" && <UploadSuccess file={file} />}
+			{file.imageStatus === "uploading" && <Loading name="Uploading" />}
+			<RedirectButton onClick={redirectToDownload} name="Download image using an ID" />
 		</>
 	);
 };

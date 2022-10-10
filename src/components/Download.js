@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import defaultImage from "../assets/default-preview.svg";
 import { useNavigate } from "react-router-dom";
 import ImageServices from "../services/image";
@@ -9,22 +9,19 @@ import PrimaryButton from "./buttons/PrimaryButton";
 import RedirectButton from "./buttons/RedirectButton";
 import UserInput from "./inputs/UserInput";
 import useNotification from "../hooks/useNotification";
+import useFile from "../hooks/useFile";
 
 const Download = () => {
+	const file = useFile();
 	const notification = useNotification();
-	const [file, setFile] = useState({
-		imagePath: defaultImage,
-		imageID: "",
-	});
-
 	const navigate = useNavigate();
 	const downloadButton = useRef(null);
 
 	const redirectToUpload = () => navigate("/");
 
-	const updateFileStatus = (status) => setFile({ ...file, status });
+	const updateFileStatus = (imageStatus) => file.update({ imageStatus });
 
-	const handleSetImageID = (e) => setFile({ ...file, imageID: e.target.value });
+	const handleSetImageID = (e) => file.update({ imageID: e.target.value });
 
 	const previewFetchedImage = async () => {
 		updateFileStatus("downloading");
@@ -34,11 +31,14 @@ const Download = () => {
 			const base64String = _arrayBufferToBase64(returnedImageBuffer);
 
 			const newImagePath = `data:image/png;base64,${base64String}`;
-			setFile({ data: true, imagePath: newImagePath });
+			file.update({ imageData: true, imagePath: newImagePath });
 			notification.update("preview");
+
 		} catch (error) {
-			notification.custom(`${error.message}. Please check your internet connection`);
-			setFile({ imagePath: defaultImage });
+			notification.custom(
+				`${error.message}. Please check your internet connection or image ID`,
+			);
+			file.update({ imagePath: defaultImage });
 		}
 		// 63422137cdafd5f70b93165c
 
@@ -63,37 +63,38 @@ const Download = () => {
 	return (
 		<>
 			{notification.display && notification.message}
-			{!file.status && (
+			{!file.imageStatus && (
 				<Card>
 					<h1 className="card-title">Download your image</h1>
-					{!file.data && <p className="card-description">Please input an ID</p>}
-					{file.data && (
+					{!file.imageData && (
+						<p className="card-description">Please input an ID</p>
+					)}
+					{file.imageData && (
 						<div
 							className="card-image-preview"
 							style={{ backgroundImage: `url(${file.imagePath})` }}
 						></div>
 					)}
-					{!file.data && (
+					{!file.imageData && (
 						<UserInput
 							value={file.imageID}
 							onChange={(e) => handleSetImageID(e)}
 						/>
 					)}
-					{file.data && (
+					{file.imageData && (
 						// eslint-disable-next-line jsx-a11y/anchor-has-content
 						<a ref={downloadButton} style={{ display: "none" }} download />
 					)}
-					{!file.data && (
+					{!file.imageData && (
 						<PrimaryButton name="Preview" onClick={previewFetchedImage} />
 					)}
-					{file.data && (
+					{file.imageData && (
 						<PrimaryButton name="Download" onClick={saveImageTolocalStorage} />
 					)}
 				</Card>
 			)}
-			{file.status === "downloading" && <Loading name="Downloading" />}
-			<RedirectButton onClick={redirectToUpload} name="Upload an image and get an ID"
-			/>
+			{file.imageStatus === "downloading" && <Loading name="Downloading" />}
+			<RedirectButton onClick={redirectToUpload} name="Upload an image and get an ID" />
 		</>
 	);
 };
