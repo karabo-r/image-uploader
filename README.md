@@ -1,70 +1,138 @@
-# Getting Started with Create React App
+<h1 align="center">Image Uploader</h1>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
+   Solution for a challenge from  <a href="http://devchallenges.io" target="_blank">Devchallenges.io</a>.
+</div>
 
-## Available Scripts
+<div align="center">
+  <h3>
+    <a href="https://{your-demo-link.your-domain}">
+      Demo
+    </a>
+    <span> | </span>
+    <a href="https://{your-url-to-the-solution}">
+      Solution
+    </a>
+    <span> | </span>
+    <a href="https://devchallenges.io/challenges/O2iGT9yBd6xZBrOcVirx">
+      Challenge
+    </a>
+  </h3>
+</div>
 
-In the project directory, you can run:
+<!-- TABLE OF CONTENTS -->
 
-### `npm start`
+## Table of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Table of Contents](#table-of-contents)
+- [Overview](#overview)
+  - [Built With](#built-with)
+- [Features](#features)
+- [How To Use](#how-to-use)
+- [Acknowledgements](#acknowledgements)
+- [Contact](#contact)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+<!-- OVERVIEW -->
 
-### `npm test`
+## Overview
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+![screenshot](https://user-images.githubusercontent.com/16707738/92399059-5716eb00-f132-11ea-8b14-bcacdc8ec97b.png)
 
-### `npm run build`
+### Built With
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Frontend
+  - [React](https://reactjs.org/)
+  - [React Router]()
+  - [Framer motion]()
+  - [Styled-Components]()
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Backend
+  - [Node.js]()
+  - [Express.js]()
+  - [Mongoose]()
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Features
 
-### `npm run eject`
+This application/site was created as a submission to a [DevChallenges](https://devchallenges.io/challenges) challenge. The [challenge](https://devchallenges.io/challenges/O2iGT9yBd6xZBrOcVirx) was to build an application to complete the given user stories. Includes extended ideas.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**Upload images**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Drag and drop or select an image file.
+- Store uploaded image file to a database for 24 hours.
+- Recieve an image id that references the file on the database
+  
+**Download images**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Enter in an image ID and preview the file on screen.
+- Download the file to local storage.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Also includes**
 
-## Learn More
+- Notification system
+- Image optermization
+  
+  <br>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+ **Where can I see your demo?**
+ You can view the live demo [here](). 🙂
+ <br>
+ **What was your experience?**
+  Had a lot of fun creating this project. It took longer than I expected and if I had to start all over again, I would defiently set time limits to simulate deadlines when adding features 💡. I tried staying true to the original designs as much as possible while incorparating my own ideas on navigation and features.  
+  <br>
+**What have you learned/improved?**
+  I've always tried being on consistent on code readablity and management, which includes refactoring. One example of this would be the states relating to the image file being uploaded or downloaded. At first the states were individually made and mantained.
+  **_Before_ :**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  ```
+  const [imageData, ... ] = () // selected file data
+  const [imagePath, ... ] = () // url pointing to the image
+  const [imageID, ... ] = () // reference id to an image on the database
+   ```
 
-### Code Splitting
+  **_After :_**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+  ```
+   const [file, ...] = ({
+      imageData: {},
+      imagePath: "https://..."
+      imageID: "123ABR342..."
+   })
+   ```
+  
+Although a small fix just like many others, this greatly improved the mangement of the code and reduced the number of states i had to keep track of as this states were closely related to the image file in some form.
+  <br>
 
-### Analyzing the Bundle Size
+**Your wisdom?**
+  You don't need Redux at this project scale 😅. I recently spent 2 full days learning about react redux and thought maybe i could possibly add it to my project, I thought worry. The code became way to complicated to follow and reduanted, it seemed better and it was, to stick to react's useState throughout for this size.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## How To Use
 
-### Making a Progressive Web App
+To clone and run this application, you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+# Clone this repository
+$ git clone https://github.com/karabo-r/image-uploader
 
-### Advanced Configuration
+# Install dependencies
+$ npm **install**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
+# Run the app (**Both** frontend and backend)
+# Read through scripts to run one -end of the app 
+$ npm start
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
 
-### `npm run build` fails to minify
+**Note:** A Mongodb database would be required to fully run or test the backend api. Create a free database [here]()
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Acknowledgements
+
+<!-- This section should list any articles or add-ons/plugins that helps you to complete the project. This is optional but it will help you in the future. For example -->
+
+- [Steps to replicate a design with only HTML and CSS](https://devchallenges-blogs.web.app/how-to-replicate-design/)
+
+## Contact
+
+- Website [karabo.dev](https://karabo.dev)
+- GitHub [@karabo-r](https://{github.com/your-usermame})
+- Twitter [@karabo_dev](https://{twitter.com/your-username})
