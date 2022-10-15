@@ -1,16 +1,15 @@
 import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Card from "./Card";
-import Loading from "./Loading";
+import Card from "../Card";
+import Loading from "../Loading";
 import UploadSuccess from "./UploadSuccess";
-import PrimaryButton from "./buttons/PrimaryButton";
-import RedirectButton from "./buttons/RedirectButton";
-import ImageServices from "../services/image";
-import useNotification from "../hooks/useNotification";
-import useFile from "../hooks/useFile";
+import PrimaryButton from "../buttons/PrimaryButton";
+import RedirectButton from "../buttons/RedirectButton";
+import ImageServices from "../../services/image";
+import useNotification from "../../hooks/useNotification";
+import useFile from "../../hooks/useFile";
 
 const Upload = () => {
-
 	const file = useFile();
 	const notification = useNotification();
 	const navigate = useNavigate();
@@ -76,9 +75,11 @@ const Upload = () => {
 				imageStatus: "uploaded",
 			});
 		} catch (error) {
-			notification.custom(error.message);
+			notification.custom(
+				`${error.message}. Please check your internet connection or file type`,
+			);
 			file.reset();
-			appendEventListeners()
+			appendEventListeners();
 		}
 	};
 
@@ -92,7 +93,7 @@ const Upload = () => {
 			{!file.imageStatus && (
 				<Card>
 					<h1 className="card-title">Upload your image</h1>
-					<p className="card-description">File should be a Png, Jpeg...</p>	
+					<p className="card-description">File should be a Png, Jpeg...</p>
 					<div
 						ref={drop}
 						className="card-image-preview"
@@ -113,7 +114,8 @@ const Upload = () => {
 			)}
 			{file.imageStatus === "uploaded" && <UploadSuccess file={file} />}
 			{file.imageStatus === "uploading" && <Loading name="Uploading" />}
-			<RedirectButton onClick={redirectToDownload} name="Download image using an ID" />
+			<RedirectButton onClick={redirectToDownload} name="Download image using an ID"
+			/>
 		</>
 	);
 };

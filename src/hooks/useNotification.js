@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Notifications from "../components/Notifications";
+import Notifications from "../components/notifications/Notifications";
 
 const useNotification = () => {
 	const [notificationMessage, setNotificationMessage] = useState({
@@ -7,25 +7,33 @@ const useNotification = () => {
 		message: "",
 	});
 
+	let notificationTimer;
+
 	const update = (type) => {
+		clearTimeout(notificationTimer);
 		setNotificationMessage({
 			display: true,
 			message: Notifications.handleMessage(type),
 		});
 		remove();
-	}
+	};
 
 	const custom = (message) => {
+		clearTimeout(notificationTimer);
 		setNotificationMessage({
 			display: true,
 			message: Notifications.customMessage(message),
 		});
 		remove();
-	}
+	};
 
 	const remove = () => {
-		setTimeout(() => {
-			setNotificationMessage({ display: false });
+		clearTimeout(notificationTimer);
+		notificationTimer = setTimeout(() => {
+			setNotificationMessage({
+				display: false,
+				message: "",
+			});
 		}, 5000);
 	};
 

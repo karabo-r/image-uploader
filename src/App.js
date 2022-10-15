@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import Upload from "./components/Upload";
-import Download from "./components/Download";
+import Upload from "./components/upload/Upload";
+import Download from "./components/download/Download";
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {

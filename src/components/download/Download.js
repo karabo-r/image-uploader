@@ -1,15 +1,15 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useRef } from "react";
-import defaultImage from "../assets/default-preview.svg";
+import defaultImage from "../../assets/default-preview.svg";
 import { useNavigate } from "react-router-dom";
-import ImageServices from "../services/image";
-import Loading from "./Loading";
-import Card from "./Card";
-import PrimaryButton from "./buttons/PrimaryButton";
-import RedirectButton from "./buttons/RedirectButton";
-import UserInput from "./inputs/UserInput";
-import useNotification from "../hooks/useNotification";
-import useFile from "../hooks/useFile";
+import ImageServices from "../../services/image";
+import Loading from "../Loading";
+import Card from "../Card";
+import PrimaryButton from "../buttons/PrimaryButton";
+import RedirectButton from "../buttons/RedirectButton";
+import UserInput from "../inputs/UserInput";
+import useNotification from "../../hooks/useNotification";
+import useFile from "../../hooks/useFile";
 
 const Download = () => {
 	const file = useFile();
@@ -40,7 +40,6 @@ const Download = () => {
 			);
 			file.update({ imagePath: defaultImage });
 		}
-		// 63422137cdafd5f70b93165c
 
 		function _arrayBufferToBase64(buffer) {
 			var binary = "";

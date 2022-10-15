@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import styled from "styled-components";
-import PrimaryButton from "./buttons/PrimaryButton";
-import useNotification from "../hooks/useNotification";
+import PrimaryButton from "../buttons/PrimaryButton";
+// import useNotification from "../../hooks/useNotification";
 
 const UploadSuccess = (props) => {
-	const notification = useNotification();
+	// const notification = useNotification();
 
 	const file = props.file;
 
@@ -12,13 +12,15 @@ const UploadSuccess = (props) => {
 		navigator.clipboard.writeText(file.imageID);
 	};
 
-	useEffect(() => {
-		notification.update("uploaded");
-	}, []);
-	
+	// useEffect(() => {
+	// 	setTimeout(() => {
+	// 		notification.update("uploaded");
+	// 	}, 1000);
+	// }, []);
+
 	return (
 		<Container>
-			{notification.display && notification.message}
+			{/* {notification.display && notification.message} */}
 			<div className="file-uploaded">
 				<h1>Uploaded Successfully</h1>
 				<div
