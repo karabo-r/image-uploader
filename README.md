@@ -69,7 +69,6 @@ This application/site was created as a submission to a [DevChallenges](https://d
 **Also includes**
 
 - Notification system
-- Image optermization
   
   <br>
 
@@ -123,7 +122,7 @@ $ npm start
 
 ```
 
-**Note:** A Mongodb database would be required to fully run or test the backend api. Create a free database [here]()
+**Note:** A Mongodb database would be required to fully run or test the backend api and some aspects of the frontend. Install a MongoDB shell on your local computer. 
 
 ## Acknowledgements
 
