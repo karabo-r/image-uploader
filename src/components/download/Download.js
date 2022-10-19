@@ -38,7 +38,8 @@ const Download = () => {
 			notification.custom(
 				`${error.message}. Please check your internet connection or image ID`,
 			);
-			file.update({ imagePath: defaultImage });
+			// file.update({ imagePath: defaultImage });
+			file.reset()
 		}
 
 		function _arrayBufferToBase64(buffer) {
@@ -65,9 +66,9 @@ const Download = () => {
 			{!file.imageStatus && (
 				<Card>
 					<h1 className="card-title">Download your image</h1>
-					{!file.imageData && (
+					{/* {!file.imageData && (
 						<p className="card-description">Please input an ID</p>
-					)}
+					)} */}
 					{file.imageData && (
 						<div
 							className="card-image-preview"
@@ -78,6 +79,7 @@ const Download = () => {
 						<UserInput
 							value={file.imageID}
 							onChange={(e) => handleSetImageID(e)}
+							placeholder="Please input an image ID"
 						/>
 					)}
 					{file.imageData && (

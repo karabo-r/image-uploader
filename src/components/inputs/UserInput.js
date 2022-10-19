@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-const UserInput = ({ value, onChange }) => {
-	return <Container value={value} onChange={onChange} />;
+const UserInput = ({ value, onChange, placeholder }) => {
+	return <Container value={value} onChange={onChange} placeholder={placeholder}/>;
 };
 
 const Container = styled.input`
@@ -13,5 +13,7 @@ const Container = styled.input`
 	line-height: 12px;
 	text-align: center;
 	letter-spacing: -0.035em;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 `;
 export default UserInput;

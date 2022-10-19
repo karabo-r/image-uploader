@@ -5,12 +5,12 @@ const RedirectButton = ({ onClick, name }) => {
 };
 
 const Container = styled.p`
+	font-size: 1.1rem;
 	position: absolute;
 	bottom: 1.5rem;
-	font-family: "Poppins";
-	font-style: normal;
-	font-weight: 500;
-	opacity: 60%;
+	margin: 10px;
+	font-weight: 600;
+	opacity: 50%;
 	cursor: pointer;
 
 	:hover {

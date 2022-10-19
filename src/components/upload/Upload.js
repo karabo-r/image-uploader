@@ -18,7 +18,7 @@ const Upload = () => {
 
 	const redirectToDownload = () => navigate("/download");
 
-	const updateFileStatus = (imageStatus) => file.update({ ...imageStatus });
+	const updateFileStatus = (imageStatus) => file.update({ imageStatus });
 
 	const appendEventListeners = () => {
 		drop.current.addEventListener("dragover", handleFileDragOver);
@@ -93,7 +93,7 @@ const Upload = () => {
 			{!file.imageStatus && (
 				<Card>
 					<h1 className="card-title">Upload your image</h1>
-					<p className="card-description">File should be a Png, Jpeg...</p>
+					{/* <p className="card-description">File should be a Png, Jpeg...</p> */}
 					<div
 						ref={drop}
 						className="card-image-preview"
@@ -114,8 +114,7 @@ const Upload = () => {
 			)}
 			{file.imageStatus === "uploaded" && <UploadSuccess file={file} />}
 			{file.imageStatus === "uploading" && <Loading name="Uploading" />}
-			<RedirectButton onClick={redirectToDownload} name="Download image using an ID"
-			/>
+			<RedirectButton onClick={redirectToDownload} name="Download image using an ID" />
 		</>
 	);
 };

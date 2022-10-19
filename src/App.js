@@ -5,9 +5,10 @@ import Download from "./components/download/Download";
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {
+
 	return (
 		<Container>
-			<Routes>
+			<Routes>	
 				<Route path="/" element={<Upload />} />
 				<Route path="/download" element={<Download />} />
 			</Routes>

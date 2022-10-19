@@ -5,7 +5,7 @@ import styled from "styled-components";
 const Loading = ({ name }) => {
 	return (
 		<Container>
-			<div className="file-loading">
+			{/* <div className="file-loading"> */}
 				<h1 className="file-loading-title">{name}</h1>
 				<div className="container">
 					<motion.div
@@ -18,13 +18,13 @@ const Loading = ({ name }) => {
 						}}
 					></motion.div>
 				</div>
-			</div>
+			{/* </div> */}
 		</Container>
 	);
 };
 
 const Container = styled.div`
-	.file-loading {
+	/* .file-loading { */
 		height: 7rem;
 		width: 23rem;
 		padding: 1rem;
@@ -39,6 +39,8 @@ const Container = styled.div`
 
 		.file-loading-title {
 			padding-left: 1rem;
+			font-size: 1.3rem;
+			
 		}
 
 		.container {
@@ -58,6 +60,10 @@ const Container = styled.div`
 				border-radius: 8px;
 			}
 		}
+	/* } */
+
+	@media screen and (max-width: 600px) {
+		box-shadow: none;
 	}
 `;
 

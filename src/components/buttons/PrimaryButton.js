@@ -9,11 +9,10 @@ const Container = styled.button`
 	outline: none;
 	color: #ffffff;
 	cursor: pointer;
-	font-size: 12px;
+	font-size: 0.9rem;
 	background: #2f80ed;
-	padding: 0.5rem 1rem;
-	font-family: "Noto Sans";
-	letter-spacing: -0.035em;
+	padding: 0.7rem 1rem;
+	letter-spacing: 1px;
 
 	:hover {
 		background-color: #0b428c;
