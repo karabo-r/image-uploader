@@ -16,5 +16,13 @@ const Container = styled.p`
 	:hover {
 		opacity: 100%;
 	}
+
+	@media screen and (max-width: 600px) {
+		position: absolute;
+		bottom: 5rem;
+		padding-right: 0;
+		text-align: center;
+		/* font-size: 1.3rem; */
+	}
 `;
 export default RedirectButton;

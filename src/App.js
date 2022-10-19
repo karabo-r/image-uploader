@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Contact from "./components/Contact";
 import Upload from "./components/upload/Upload";
 import Download from "./components/download/Download";
 import { Routes, Route } from "react-router-dom";
@@ -10,6 +11,7 @@ const App = () => {
 				<Route path="/" element={<Upload />} />
 				<Route path="/download" element={<Download />} />
 			</Routes>
+			<Contact />
 		</Container>
 	);
 };
