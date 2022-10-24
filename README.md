@@ -29,7 +29,6 @@
   - [Built With](#built-with)
 - [Features](#features)
 - [Project Story](#project-story)
-    - [](#)
 - [How To Use](#how-to-use)
 - [Contact](#contact)
 
@@ -78,13 +77,11 @@ This application/site was created as a submission to a [DevChallenges](https://d
 
 ## Project Story
 
- **Where can I see your demo?**
- You can view the live demo [here](https://image-uploader-vabs.onrender.com/). 🙂
- <br>
- **What was your experience?**
-I had fun creating this project. It took longer than I expected and would definitely set time limits to simulate deadlines when adding features on a the next project💡. I tried staying true to the original designs as much as possible while incorporating my own ideas on navigation and features.
-  <br>
-**What have you learned/improved?**
+ ### Where can I see your demo?
+ You can view the live demo [here](https://image-uploader-vabs.onrender.com/). 🙂<br><br>
+ ### What was your experience?
+I had fun creating this project. It took longer than I expected and would definitely set time limits to simulate deadlines when adding features on a the next project💡. I tried staying true to the original designs as much as possible while incorporating my own ideas on navigation and features.<br><br>
+### What have you learned/improved?
  I've always tried being consistent on code readability and management, which includes refactoring. One example of this would be the states relating to the image file being uploaded or downloaded. At first the states were individually made and maintained for every component that needed them.
   **_Before_ :**
 
@@ -133,15 +130,10 @@ Repeating these lines of code for every component that needed them made the proj
     response = await ....
     file.update({ imageID: response.data.id })
   }
-  ```
-
-  #### 
-
+  ``` 
   <br>
-
   
-
-**Your wisdom?**
+### Your wisdom?
 You don't need Redux at this project scale 😅. I've spent a few days learning about react redux and thought maybe I could possibly add it to my project, I thought worry. The code became way too complicated to follow and redundant, it seemed better and it was, to stick to react's useState throughout for this size with some states in custom hooks. I would imagine if the project continued to grow, a state management would be needed.
   
 
