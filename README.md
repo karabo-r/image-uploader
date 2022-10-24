@@ -29,12 +29,20 @@
   - [Built With](#built-with)
 - [Features](#features)
 - [Project Story](#project-story)
+  - [Where can I see your demo?](#where-can-i-see-your-demo)
+  - [What was your experience?](#what-was-your-experience)
+  - [What have you learned/improved?](#what-have-you-learnedimproved)
+  - [Your wisdom?](#your-wisdom)
 - [How To Use](#how-to-use)
 - [Contact](#contact)
 
 <!-- OVERVIEW -->
 
 ## Overview
+
+Upload images temporarily on a database for 24 hours. You'll also receive an image ID that's connected to your image. Download it, whenever. 💚 <br>
+
+![](/public/assets/screenshot-2.gif)
 
 ### Built With
 
