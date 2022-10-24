@@ -4,7 +4,7 @@ import axios from "axios";
 async function upload(data) {
 	const response = await axios({
 		method: "post",
-		url: "http://localhost:3003/uploads",
+		url: "/uploads",
 		data: data,
 		headers: { "Content-Type": "multipart/form-data" },
 	});
@@ -12,7 +12,7 @@ async function upload(data) {
 }
 
 async function download(imageID) {
-	const response = await axios.get(`http://localhost:3003/download/${imageID}`);
+	const response = await axios.get(`/download/${imageID}`);
 	return response;
 }
 
