@@ -19,11 +19,16 @@
     </a>
   </h3>
 </div>
-
+<br>
 <!-- TABLE OF CONTENTS -->
+
+## Upload images temporarily on a database for 24 hours. You'll also receive an image ID that's connected to your image. Download it, whenever. 💚 <br>
+
+![](/public/assets/screenshot-2.gif)
 
 ## Table of Contents
 
+- [Upload images temporarily on a database for 24 hours. You'll also receive an image ID that's connected to your image. Download it, whenever. 💚 <br>](#upload-images-temporarily-on-a-database-for-24-hours-youll-also-receive-an-image-id-thats-connected-to-your-image-download-it-whenever--)
 - [Table of Contents](#table-of-contents)
 - [Overview](#overview)
   - [Built With](#built-with)
@@ -40,9 +45,8 @@
 
 ## Overview
 
-Upload images temporarily on a database for 24 hours. You'll also receive an image ID that's connected to your image. Download it, whenever. 💚 <br>
 
-![](/public/assets/screenshot-2.gif)
+
 
 ### Built With
 
