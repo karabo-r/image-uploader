@@ -9,6 +9,7 @@ const DownloadRouter = require("./controllers/DownloadRouter");
 const app = express();
 const PORT = 3003 || process.env.PORT;
 
+app.use(express.static("build"))
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

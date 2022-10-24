@@ -93,7 +93,6 @@ const Upload = () => {
 			{!file.imageStatus && (
 				<Card>
 					<h1 className="card-title">Upload your image</h1>
-					{/* <p className="card-description">File should be a Png, Jpeg...</p> */}
 					<div
 						ref={drop}
 						className="card-image-preview"
